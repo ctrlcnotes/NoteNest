@@ -31,7 +31,7 @@
             background: rgba(255,255,255,0.95);
             position: sticky;
             top: 0;
-            z-index: 50;
+            z-index: 100;
             border-bottom: 4px solid var(--color-pastel-green);
             box-shadow: 0 2px 12px rgba(0,0,0,0.05);
             padding: 1rem 2rem;
@@ -47,34 +47,106 @@
             gap: 10px;
             align-items: center;
         }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
-        .btn {
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+        .btn-link {
             border: none;
-            border-radius: var(--radius-md);
-            padding: 0.7rem 1.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-primary {
-            background: var(--color-pink-main);
-            color: white;
-            box-shadow: 0 4px 10px rgba(237, 158, 160, 0.4);
-        }
-        .btn-primary:hover { transform: translateY(-2px); }
-        .btn-secondary {
             background: transparent;
+            font-weight: 600;
             color: var(--color-dim-green);
-            border: 2px solid var(--color-dim-green);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            transition: background 0.2s;
         }
-        .btn-secondary:hover { background: var(--color-dim-green); color: white; }
-        .user-profile-btn {
-            width: 40px; height: 40px;
+        .btn-link:hover { background: rgba(196,194,161,0.2); }
+        .icon-btn, .user-profile-btn {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             border: none;
-            background: var(--color-accent-1);
-            font-size: 1.2rem;
             cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .icon-btn {
+            background: var(--color-pastel-green);
+            color: var(--text-primary);
+        }
+        .icon-btn:hover, .user-profile-btn:hover { transform: translateY(-2px); }
+        .user-profile-btn {
+            background: var(--color-accent-1);
+        }
+        .profile-menu {
+            position: fixed;
+            top: 70px;
+            right: 2rem;
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 0.5rem;
+            display: none;
+            z-index: 120;
+        }
+        .profile-menu.show { display: block; }
+        .profile-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 0.6rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+        .profile-menu button:hover { background: rgba(237,158,160,0.1); }
+        .search-panel {
+            position: sticky;
+            top: 72px;
+            z-index: 90;
+            background: white;
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .search-panel.show {
+            max-height: 110px;
+            padding: 1rem 2rem;
+        }
+        .search-panel form {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border-radius: var(--radius-md);
+            border: 2px solid #eee;
+            font-size: 1rem;
+        }
+        .search-panel button {
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius-md);
+            background: var(--color-pink-main);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .search-status {
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
         main {
             max-width: 1100px;
@@ -84,63 +156,143 @@
         .hero-section {
             background: linear-gradient(135deg, #fff, var(--color-accent-1));
             border-radius: var(--radius-lg);
-            padding: 2rem;
+            padding: 2.5rem;
             box-shadow: var(--shadow-subtle);
             margin-bottom: 3rem;
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1.5rem;
+            gap: 2rem;
         }
         @media(min-width: 900px) {
-            .hero-section { grid-template-columns: 2fr 1fr; }
+            .hero-section { grid-template-columns: 1.2fr 1fr; align-items: center; }
         }
         .hero-content h1 {
-            font-size: 2.4rem;
+            font-size: 2.5rem;
             color: var(--color-pink-main);
             margin-bottom: 1rem;
         }
-        .hero-grid {
-            display: grid;
-            gap: 1rem;
-        }
-        @media(min-width: 600px) {
-            .hero-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-        .hero-card {
-            background: rgba(255,255,255,0.85);
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            min-height: 160px;
-        }
-        .hero-card h4 {
-            color: var(--color-dim-green);
-            margin-bottom: 0.4rem;
-            font-size: 1rem;
-        }
-        .hero-side {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            box-shadow: var(--shadow-subtle);
-        }
-        .hero-side ul { list-style: none; }
-        .hero-side li {
-            display: flex;
-            gap: 0.6rem;
-            margin-bottom: 0.4rem;
+        .hero-content p {
+            margin-bottom: 1rem;
             color: var(--text-secondary);
-        }
+            line-height: 1.6;
+               }
         .cta-row {
             display: flex;
             gap: 10px;
-            margin-top: 1rem;
             flex-wrap: wrap;
+            margin-top: 1rem;
         }
-        .cta-row .btn-primary { background: var(--color-pink-light); color: var(--text-primary); }
+        .cta-row button {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.8rem 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .cta-primary {
+            background: var(--color-pink-light);
+            color: var(--text-primary);
+        }
+        .cta-secondary {
+            background: transparent;
+            color: var(--color-dim-green);
+            border: 2px solid var(--color-dim-green);
+        }
+        .cta-secondary:hover { background: var(--color-dim-green); color: white; }
+        .hero-visual {
+            position: relative;
+            background: #fefcfa;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            min-height: 280px;
+            box-shadow: inset 0 0 0 2px rgba(231,210,202,0.4);
+        }
+        .hero-visual::before {
+            content: "";
+            position: absolute;
+            inset: 15px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(145deg, #fdf2f6, #fde7ef);
+            box-shadow: 0 20px 40px rgba(237,158,160,0.25);
+        }
+        .desk-laptop, .desk-notes, .desk-pen, .desk-headphones, .desk-highlighter {
+            position: absolute;
+            border-radius: 12px;
+        }
+        .desk-laptop {
+            width: 55%;
+            height: 40%;
+            top: 18%;
+            right: 10%;
+            background: #d9d9d9;
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 4px #f6f6f6;
+        }
+        .desk-notes {
+            width: 48%;
+            height: 55%;
+            bottom: 12%;
+            left: 12%;
+            background: #ffeef1;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+        .desk-notes::after {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 14px;
+            background: repeating-linear-gradient(180deg, #fff, #fff 16px, #f7dbe2 16px, #f7dbe2 32px);
+        }
+        .desk-pen {
+            width: 14%;
+            height: 5%;
+            bottom: 20%;
+            right: 20%;
+            background: #ffffff;
+            border-radius: 999px;
+            box-shadow: inset 0 -4px 0 #edc7cf;
+        }
+        .desk-highlighter {
+            width: 12%;
+            height: 4%;
+            top: 30%;
+            left: 18%;
+            background: #f7c7d3;
+            border-radius: 999px;
+        }
+        .desk-headphones {
+            width: 90px;
+            height: 90px;
+            top: 10%;
+            left: 10%;
+            border: 8px solid #f6c6d1;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .about-section {
+            margin-bottom: 3rem;
+        }
+        .about-section h2 {
+            font-size: 2rem;
+            color: var(--color-pink-main);
+            margin-bottom: 1rem;
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .about-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle);
+        }
+        .about-card h4 {
+            color: var(--color-dim-green);
+            margin-bottom: 0.4rem;
+        }
         .app-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -150,7 +302,7 @@
             .app-grid { grid-template-columns: 2fr 1fr; }
         }
         .feed-controls {
-            display: flex; gap: 10px; margin-bottom: 1rem;
+            display: flex; gap: 10px; margin-bottom: 0.5rem;
         }
         .filter-pill {
             padding: 0.5rem 1rem;
@@ -164,6 +316,11 @@
             background: var(--color-pastel-green);
             color: white;
             border-color: var(--color-dim-green);
+        }
+        .feed-status {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
         }
         .note-list { display: flex; flex-direction: column; gap: 1.5rem; }
         .card {
@@ -228,7 +385,6 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 1.4rem;
         }
-        .author-meta h4 { font-size: 1rem; }
         .author-meta span { font-size: 0.85rem; color: var(--text-secondary); }
         .content-text { line-height: 1.6; color: #444; margin-bottom: 1rem; }
         .edit-form { display: none; }
@@ -367,6 +523,54 @@
             gap: 10px;
             margin-top: 1rem;
         }
+        .community-comments {
+            margin-top: 3rem;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle);
+        }
+        .community-comments h2 {
+            color: var(--color-pink-main);
+            margin-bottom: 0.5rem;
+        }
+        .comment-board {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .comment-card {
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            background: #fef8f9;
+            border-left: 4px solid var(--color-pink-main);
+        }
+        .comment-card h4 {
+            color: var(--color-dim-green);
+            margin-bottom: 0.4rem;
+        }
+        .comment-card small { color: var(--text-secondary); }
+        .comment-form {
+            display: grid;
+            gap: 0.8rem;
+        }
+        .comment-form input, .comment-form textarea {
+            padding: 0.8rem;
+            border-radius: var(--radius-md);
+            border: 2px solid #eee;
+            font-family: inherit;
+        }
+        .comment-form button {
+            justify-self: flex-end;
+            border: none;
+            padding: 0.8rem 1.6rem;
+            border-radius: var(--radius-md);
+            background: var(--color-pink-main);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -382,44 +586,59 @@
 <header>
     <div class="brand"><span style="font-size:2rem;">🪺</span>NoteNest</div>
     <div class="header-actions">
-        <button class="btn btn-secondary" onclick="openProfileModal()">Edit Profile</button>
-        <button class="btn btn-primary" onclick="openNoteModal()">+ Share Notes</button>
-        <button class="user-profile-btn" id="userAvatarBtn">😊</button>
+        <button class="btn-link" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'});">About Us</button>
+        <button class="icon-btn" onclick="toggleSearchPanel()">🔍</button>
+        <button class="user-profile-btn" id="userAvatarBtn" onclick="toggleProfileMenu()">😊</button>
     </div>
 </header>
+
+<div class="profile-menu" id="profileMenu">
+    <button onclick="openProfileModal()">Edit Profile</button>
+    <button onclick="openNoteModal()">Share a Note</button>
+</div>
+
+<div class="search-panel" id="searchPanel">
+    <form onsubmit="event.preventDefault();">
+        <input id="searchInput" class="search-input" type="text" placeholder="Search subjects, authors, or keywords…" oninput="handleSearchInput(event)">
+        <button type="button" onclick="clearSearch()">Clear</button>
+    </form>
+    <div class="search-status" id="searchStatus">Browsing all shared notes.</div>
+</div>
 
 <main>
     <section class="hero-section" id="home">
         <div class="hero-content">
             <h1>NoteNest is your cozy campus for collaborative studying.</h1>
-            <p style="margin-bottom:1.2rem;">We built NoteNest to turn exam prep into a creative studio: students swap summaries, doodles, and “aha!” moments with instant comments and reactions. It’s perfect for anyone who learns best in community—from lab partners to literature lovers.</p>
-            <div class="hero-grid">
-                <div class="hero-card">
-                    <h4>What is NoteNest?</h4>
-                    <p>A shared wall of student-made notes, reactions, and threads that feel as friendly as group study but as organized as your favorite planner.</p>
-                </div>
-                <div class="hero-card">
-                    <h4>Who is it for?</h4>
-                    <p>High school and university learners, clubs, and study buddies who crave a visual, social way to keep coursework clear.</p>
-                </div>
-                <div class="hero-card">
-                    <h4>Why we built it</h4>
-                    <p>Because focused studying shouldn’t feel lonely. Every shared note turns into a ripple of understanding!</p>
-                </div>
-            </div>
+            <p>Swap summaries, doodles, and lightbulb moments in a supportive space that blends creativity with productivity. Every shared page helps another learner take flight.</p>
             <div class="cta-row">
-                <button class="btn btn-primary" onclick="document.getElementById('feedSection').scrollIntoView({behavior:'smooth'});">Scroll to Notes</button>
-                <button class="btn btn-secondary" onclick="openNoteModal()">Post a Note</button>
+                <button class="cta-primary" onclick="document.getElementById('feedSection').scrollIntoView({behavior:'smooth'});">Scroll to Notes</button>
+                <button class="cta-secondary" onclick="openNoteModal()">Post a Note</button>
             </div>
         </div>
-        <div class="hero-side">
-            <h3 style="color:var(--color-pink-main);">Study Flow</h3>
-            <ul>
-                <li>🎯 Introduce yourself with a fun profile.</li>
-                <li>🪄 Drop highlights, sketches, or mnemonics.</li>
-                <li>💬 Follow up with questions, comments, and emoji vibes.</li>
-                <li>🗂️ Edit or delete anytime to keep things fresh.</li>
-            </ul>
+        <div class="hero-visual">
+            <div class="desk-laptop"></div>
+            <div class="desk-notes"></div>
+            <div class="desk-pen"></div>
+            <div class="desk-highlighter"></div>
+            <div class="desk-headphones"></div>
+        </div>
+    </section>
+
+    <section class="about-section" id="about">
+        <h2>About NoteNest</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <h4>What we are</h4>
+                <p>A living wall of student-crafted notes with built-in reactions, comments, and tidy editing tools so study sessions feel human and organized.</p>
+            </div>
+            <div class="about-card">
+                <h4>Who we serve</h4>
+                <p>From freshmen to grad cohorts, NoteNest welcomes visual learners, club study groups, and solo scholars who thrive with community energy.</p>
+            </div>
+            <div class="about-card">
+                <h4>Why we built it</h4>
+                <p>Studying shouldn’t feel lonely. NoteNest turns individual progress into shared momentum, letting everyone uplift each other’s learning.</p>
+            </div>
         </div>
     </section>
 
@@ -430,6 +649,7 @@
                 <span class="filter-pill">Popular</span>
                 <span class="filter-pill">Latest</span>
             </div>
+            <div class="feed-status" id="resultCount"></div>
             <div id="feed-container" class="note-list"></div>
         </section>
 
@@ -438,7 +658,7 @@
                 <div class="profile-avatar" id="profileAvatar">😊</div>
                 <h4 id="profileName">New Student</h4>
                 <p id="profileMajor">Choose your major</p>
-                <small id="profileBio">Click “Edit Profile” to introduce yourself!</small>
+                <small id="profileBio">Tap the avatar menu to personalize your nest.</small>
             </div>
             <h3 style="color:var(--color-dim-green); margin-bottom:0.5rem;">Trending Subjects 🔥</h3>
             <div class="trend-item"><span>Art History</span><span class="trend-count">12</span></div>
@@ -447,6 +667,17 @@
             <div class="trend-item"><span>Sociology</span><span class="trend-count">3</span></div>
         </aside>
     </div>
+
+    <section class="community-comments" id="community">
+        <h2>Leave a NoteNest Shout-out</h2>
+        <p style="color:var(--text-secondary);">Have feedback, gratitude, or a study mantra? Drop it below so the community can feel the love.</p>
+        <div class="comment-board" id="commentList"></div>
+        <form class="comment-form" id="commentForm" onsubmit="handleCommentPost(event)">
+            <input type="text" id="commentName" placeholder="Your name or nickname">
+            <textarea id="commentMessage" rows="4" placeholder="Share your comment…" required></textarea>
+            <button type="submit">Send ❤️</button>
+        </form>
+    </section>
 </main>
 
 <!-- Note Modal -->
@@ -501,11 +732,14 @@
 
 <script>
     let selectedEmoji = "😊";
+    let searchQuery = "";
+    let profileMenuOpen = false;
+
     let currentUser = {
         name: "New Student",
         avatar: "😊",
         major: "Choose your major",
-        bio: "Click “Edit Profile” to introduce yourself!"
+        bio: "Tap the avatar menu to personalize your nest."
     };
 
     let notes = [
@@ -537,6 +771,11 @@
         }
     ];
 
+    let boardComments = [
+        { name: "Ivy", message: "Loving the pastel vibes—makes revising so much calmer.", timestamp: "Just now" },
+        { name: "Caleb", message: "Shared my chem quick guide and got instant feedback. Thanks NoteNest!", timestamp: "1 hr ago" }
+    ];
+
     const feedContainer = document.getElementById('feed-container');
     const profileAvatar = document.getElementById('profileAvatar');
     const profileName = document.getElementById('profileName');
@@ -546,14 +785,25 @@
     const noteModal = document.getElementById('noteModal');
     const profileModal = document.getElementById('profileModal');
     const emojiPicker = document.getElementById('emojiPicker');
+    const profileMenu = document.getElementById('profileMenu');
+    const searchPanel = document.getElementById('searchPanel');
+    const searchStatus = document.getElementById('searchStatus');
+    const resultCount = document.getElementById('resultCount');
+    const commentList = document.getElementById('commentList');
 
     function renderFeed() {
         feedContainer.innerHTML = '';
-        if (notes.length === 0) {
-            feedContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#aaa;">No notes yet. Be the first to share knowledge! 🪺</div>`;
+        const filtered = notes.filter(note => {
+            if (!searchQuery) return true;
+            const haystack = (note.subject + note.content + note.author).toLowerCase();
+            return haystack.includes(searchQuery);
+        });
+        resultCount.textContent = `${filtered.length} note${filtered.length !== 1 ? 's' : ''} on the board`;
+        if (filtered.length === 0) {
+            feedContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#aaa;">No notes match “${searchQuery}”. Try another keyword! 🪺</div>`;
             return;
         }
-        notes.forEach(note => {
+        filtered.forEach(note => {
             const comments = note.comments.map(c => `<div style="padding:4px 0; font-size:0.9rem;">💬 ${c}</div>`).join('');
             const card = document.createElement('div');
             card.className = 'card';
@@ -624,6 +874,16 @@
                 e.currentTarget.classList.add('selected');
             });
             emojiPicker.appendChild(btn);
+        });
+    }
+
+    function renderComments() {
+        commentList.innerHTML = '';
+        boardComments.forEach(comment => {
+            const card = document.createElement('div');
+            card.className = 'comment-card';
+            card.innerHTML = `<h4>${comment.name || "Anonymous Owl"}</h4><p>${comment.message}</p><small>${comment.timestamp}</small>`;
+            commentList.appendChild(card);
         });
     }
 
@@ -722,28 +982,57 @@
         document.getElementById('profileForm').reset();
     }
 
-    function openNoteModal() {
-        noteModal.classList.add('visible');
+    function handleCommentPost(e) {
+        e.preventDefault();
+        const name = document.getElementById('commentName').value.trim();
+        const message = document.getElementById('commentMessage').value.trim();
+        boardComments.unshift({
+            name: name || "Anonymous Owl",
+            message,
+            timestamp: new Date().toLocaleString()
+        });
+        renderComments();
+        e.target.reset();
     }
 
-    function closeNoteModal() {
-        noteModal.classList.remove('visible');
-    }
-
+    function openNoteModal() { noteModal.classList.add('visible'); }
+    function closeNoteModal() { noteModal.classList.remove('visible'); }
     function openProfileModal() {
         populateEmojiPicker();
         document.getElementById('profileNameInput').value = currentUser.name === "New Student" ? "" : currentUser.name;
         document.getElementById('profileMajorInput').value = currentUser.major.includes("Choose") ? "" : currentUser.major;
-        document.getElementById('profileBioInput').value = currentUser.bio.includes("Click") ? "" : currentUser.bio;
+        document.getElementById('profileBioInput').value = currentUser.bio.includes("Tap") ? "" : currentUser.bio;
         profileModal.classList.add('visible');
     }
+    function closeProfileModal() { profileModal.classList.remove('visible'); }
 
-    function closeProfileModal() {
-        profileModal.classList.remove('visible');
+    function toggleProfileMenu() {
+        profileMenuOpen = !profileMenuOpen;
+        profileMenu.classList.toggle('show', profileMenuOpen);
+    }
+
+    function toggleSearchPanel() {
+        searchPanel.classList.toggle('show');
+        if (searchPanel.classList.contains('show')) {
+            document.getElementById('searchInput').focus();
+        }
+    }
+
+    function handleSearchInput(event) {
+        searchQuery = event.target.value.trim().toLowerCase();
+        searchStatus.textContent = searchQuery ? `Showing notes matching “${searchQuery}”` : 'Browsing all shared notes.';
+        renderFeed();
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        searchQuery = '';
+        searchStatus.textContent = 'Browsing all shared notes.';
+        renderFeed();
     }
 
     function viewProfile(name) {
-        alert(`${name}'s full profile would appear here in a full NoteNest build.`);
+        alert(`${name}'s full profile would appear here in a complete NoteNest build.`);
     }
 
     window.addEventListener('click', (e) => {
@@ -752,11 +1041,16 @@
         if (!e.target.closest('.card-options')) {
             document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
         }
+        if (!e.target.closest('#userAvatarBtn') && !e.target.closest('.profile-menu')) {
+            profileMenuOpen = false;
+            profileMenu.classList.remove('show');
+        }
     });
 
     populateEmojiPicker();
     renderFeed();
     renderProfile();
+    renderComments();
 </script>
 
 </body>
