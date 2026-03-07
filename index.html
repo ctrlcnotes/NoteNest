@@ -1,992 +1,1789 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteNest • Student Notes Hub</title>
-    <style>
-        :root {
-            --color-accent-1: #E7D2CA;
-            --color-pastel-green: #E7E5BF;
-            --color-pink-light: #FDBAC2;
-            --color-pink-main: #ED9EA0;
-            --color-dim-green: #C4C2A1;
-            --bg-body: #FAFBFB;
-            --bg-card: #FFFFFF;
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --radius-lg: 20px;
-            --radius-md: 12px;
-            --shadow-subtle: 0 6px 20px rgba(196, 194, 161, 0.25);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: "Inter", "Segoe UI", sans-serif;
-            background: var(--bg-body);
-            color: var(--text-primary);
-            min-height: 100vh;
-            scroll-behavior: smooth;
-        }
-        header {
-            background: rgba(255,255,255,0.95);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 4px solid var(--color-pastel-green);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .brand {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--color-pink-main);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .header-actions {
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-        }
-        .btn-link {
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            color: var(--color-dim-green);
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
-            transition: background 0.2s;
-        }
-        .btn-link:hover { background: rgba(196,194,161,0.2); }
-        .icon-btn, .user-profile-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-        .icon-btn {
-            background: var(--color-pastel-green);
-            color: var(--text-primary);
-        }
-        .icon-btn:hover, .user-profile-btn:hover { transform: translateY(-2px); }
-        .user-profile-btn {
-            background: var(--color-accent-1);
-        }
-        .profile-menu {
-            position: fixed;
-            top: 70px;
-            right: 2rem;
-            background: white;
-            border-radius: var(--radius-md);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            padding: 0.5rem;
-            display: none;
-            z-index: 120;
-        }
-        .profile-menu.show { display: block; }
-        .profile-menu button {
-            width: 100%;
-            border: none;
-            background: transparent;
-            padding: 0.6rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-        }
-        .profile-menu button:hover { background: rgba(237,158,160,0.1); }
-        .search-panel {
-            position: sticky;
-            top: 72px;
-            z-index: 90;
-            background: white;
-            border-bottom: 1px solid #eee;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .search-panel.show {
-            max-height: 110px;
-            padding: 1rem 2rem;
-        }
-        .search-panel form {
-            display: flex;
-            gap: 0.8rem;
-            align-items: center;
-        }
-        .search-input {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            border-radius: var(--radius-md);
-            border: 2px solid #eee;
-            font-size: 1rem;
-        }
-        .search-panel button {
-            border: none;
-            padding: 0.7rem 1.2rem;
-            border-radius: var(--radius-md);
-            background: var(--color-pink-main);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .search-status {
-            margin-top: 0.4rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-        main {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 4rem;
-        }
-        .hero-section {
-            background: linear-gradient(135deg, #fff, var(--color-accent-1));
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            box-shadow: var(--shadow-subtle);
-            margin-bottom: 3rem;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            align-items: center;
-        }
-        @media(min-width: 900px) {
-            .hero-section { grid-template-columns: 1.2fr 1fr; }
-        }
-        .hero-content h1 {
-            font-size: 2.5rem;
-            color: var(--color-pink-main);
-            margin-bottom: 1rem;
-        }
-        .hero-content p {
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-               }
-        .cta-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-        .cta-row button {
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 0.8rem 1.6rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .cta-primary {
-            background: var(--color-pink-light);
-            color: var(--text-primary);
-        }
-        .cta-secondary {
-            background: transparent;
-            color: var(--color-dim-green);
-            border: 2px solid var(--color-dim-green);
-        }
-        .cta-secondary:hover { background: var(--color-dim-green); color: white; }
-        .hero-image {
-            width: 100%;
-            height: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: var(--radius-lg);
-            box-shadow: 0 20px 40px rgba(237,158,160,0.2);
-        }
-        .about-section {
-            margin-bottom: 3rem;
-        }
-        .about-section h2 {
-            font-size: 2rem;
-            color: var(--color-pink-main);
-            margin-bottom: 1rem;
-        }
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-        }
-        .about-card {
-            background: white;
-            padding: 1.2rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-subtle);
-        }
-        .about-card h4 {
-            color: var(--color-dim-green);
-            margin-bottom: 0.4rem;
-        }
-        .app-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        @media(min-width: 900px) {
-            .app-grid { grid-template-columns: 2fr 1fr; }
-        }
-        .feed-controls {
-            display: flex; gap: 10px; margin-bottom: 0.5rem;
-        }
-        .filter-pill {
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
-            border: 1px solid var(--color-pastel-green);
-            background: white;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .filter-pill.active {
-            background: var(--color-pastel-green);
-            color: white;
-            border-color: var(--color-dim-green);
-        }
-        .feed-status {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-        .note-list { display: flex; flex-direction: column; gap: 1.5rem; }
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            border-left: 6px solid var(--color-dim-green);
-            box-shadow: var(--shadow-subtle);
-            position: relative;
-            animation: fadeUp 0.5s ease;
-        }
-        .card-header, .card-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .badge {
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            padding: 0.3rem 0.7rem;
-            border-radius: 8px;
-            background: rgba(196,194,161,0.2);
-            color: var(--color-dim-green);
-            letter-spacing: 0.5px;
-        }
-        .options-btn {
-            border: none; background: transparent;
-            font-size: 1.2rem; cursor: pointer;
-            padding: 4px;
-        }
-        .dropdown-menu {
-            position: absolute;
-            right: 1rem; top: 3.2rem;
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            display: none;
-            overflow: hidden;
-        }
-        .dropdown-menu.show { display: block; }
-        .dropdown-item {
-            padding: 0.7rem 1rem;
-            border: none;
-            background: transparent;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .dropdown-item:hover { background: #f8f8f8; }
-        .dropdown-item.danger:hover { background: #ffe8e8; color: #d32f2f; }
-        .author-row {
-            display: flex; gap: 10px; align-items: center;
-            margin: 1rem 0;
-            cursor: pointer;
-        }
-        .avatar {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            background: var(--color-accent-1);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem;
-        }
-        .author-meta span { font-size: 0.85rem; color: var(--text-secondary); }
-        .content-text { line-height: 1.6; color: #444; margin-bottom: 1rem; }
-        .edit-form { display: none; }
-        .card.edit-mode .content-text { display: none; }
-        .card.edit-mode .edit-form { display: block; }
-        .edit-textarea {
-            width: 100%; min-height: 80px;
-            padding: 0.7rem;
-            border-radius: 10px;
-            border: 2px solid var(--color-pastel-green);
-            font-family: inherit;
-        }
-        .edit-actions { margin-top: 0.5rem; display: flex; gap: 8px; }
-        .btn-small {
-            border: none;
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-save { background: var(--color-pink-main); color: white; }
-        .btn-cancel { background: #f0f0f0; color: #555; }
-        .action-btn {
-            border: none;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-        .liked .like-icon { color: var(--color-pink-main); }
-        .comments-wrapper {
-            display: none;
-            background: #fafafa;
-            border-radius: 12px;
-            padding: 1rem;
-        }
-        .comments-wrapper.open { display: block; animation: expand 0.3s ease; }
-        .comment-input {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            margin-top: 0.6rem;
-        }
-        aside {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-subtle);
-            height: fit-content;
-        }
-        .profile-card {
-            background: var(--color-accent-1);
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
-            color: white;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .profile-avatar {
-            width: 72px; height: 72px;
-            background: white;
-            color: var(--color-pink-main);
-            border-radius: 50%;
-            margin: 0 auto 0.8rem;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem;
-        }
-        .trend-item {
-            display: flex; justify-content: space-between;
-            border-bottom: 1px solid #f2f2f2;
-            padding: 0.5rem 0;
-            color: var(--text-secondary);
-        }
-        .trend-count { font-weight: 700; color: var(--color-pink-main); }
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-secondary);
-        }
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .modal-overlay.visible { opacity: 1; pointer-events: all; }
-        .modal-box {
-            background: white;
-            border-radius: var(--radius-lg);
-            width: 90%;
-            max-width: 520px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            border-top: 10px solid var(--color-pink-main);
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .modal-overlay.visible .modal-box { transform: scale(1); }
-        .form-group { margin-bottom: 1.2rem; }
-        .form-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; display: block; color: var(--color-dim-green); }
-        .form-control {
-            width: 100%;
-            padding: 0.8rem;
-            border-radius: 10px;
-            border: 2px solid #eee;
-            font-family: inherit;
-        }
-        .emoji-picker {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-        }
-        .emoji-option {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 0.4rem;
-            font-size: 1.3rem;
-            background: white;
-            cursor: pointer;
-        }
-        .emoji-option.selected,
-        .emoji-option:hover {
-            border-color: var(--color-pink-main);
-            background: var(--color-pink-light);
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 1rem;
-        }
-        .community-comments {
-            margin-top: 3rem;
-            background: white;
-            padding: 2rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-subtle);
-        }
-        .community-comments h2 {
-            color: var(--color-pink-main);
-            margin-bottom: 0.5rem;
-        }
-        .comment-board {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-        .comment-card {
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            background: #fef8f9;
-            border-left: 4px solid var(--color-pink-main);
-        }
-        .comment-card h4 {
-            color: var(--color-dim-green);
-            margin-bottom: 0.4rem;
-        }
-        .comment-card small { color: var(--text-secondary); }
-        .comment-form {
-            display: grid;
-            gap: 0.8rem;
-        }
-        .comment-form input, .comment-form textarea {
-            padding: 0.8rem;
-            border-radius: var(--radius-md);
-            border: 2px solid #eee;
-            font-family: inherit;
-        }
-        .comment-form button {
-            justify-self: flex-end;
-            border: none;
-            padding: 0.8rem 1.6rem;
-            border-radius: var(--radius-md);
-            background: var(--color-pink-main);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes expand {
-            from { max-height: 0; opacity: 0; }
-            to { max-height: 600px; opacity: 1; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NoteNest • Student Notes Hub</title>
+  <style>
+    :root {
+      --color-accent-1: #E7D2CA;
+      --color-pastel-green: #E7E5BF;
+      --color-pink-light: #FDBAC2;
+      --color-pink-main: #ED9EA0;
+      --color-dim-green: #C4C2A1;
+      --bg-body: #FAFBFB;
+      --bg-card: #FFFFFF;
+      --text-primary: #333333;
+      --text-secondary: #666666;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --shadow-subtle: 0 6px 20px rgba(196, 194, 161, 0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Inter", "Segoe UI", sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      scroll-behavior: smooth;
+    }
+
+    header {
+      background: rgba(255,255,255,0.96);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 4px solid var(--color-pastel-green);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-pink-main);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn,
+    .btn-link,
+    .icon-btn,
+    .user-profile-btn,
+    .btn-small {
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    .btn {
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1.4rem;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: var(--color-pink-main);
+      color: white;
+      box-shadow: 0 4px 10px rgba(237, 158, 160, 0.35);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-dim-green);
+      border: 2px solid var(--color-dim-green);
+    }
+
+    .btn:hover,
+    .btn-small:hover,
+    .icon-btn:hover,
+    .user-profile-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-link {
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: var(--color-dim-green);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+    }
+
+    .btn-link:hover {
+      background: rgba(196,194,161,0.2);
+    }
+
+    .icon-btn,
+    .user-profile-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn {
+      background: var(--color-pastel-green);
+      color: var(--text-primary);
+    }
+
+    .user-profile-btn {
+      background: var(--color-accent-1);
+    }
+
+    .profile-menu {
+      position: fixed;
+      top: 74px;
+      right: 1.2rem;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      padding: 0.5rem;
+      display: none;
+      z-index: 120;
+      min-width: 180px;
+    }
+
+    .profile-menu.show { display: block; }
+
+    .profile-menu button {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .profile-menu button:hover {
+      background: rgba(237,158,160,0.12);
+    }
+
+    .search-panel {
+      position: sticky;
+      top: 76px;
+      z-index: 90;
+      background: white;
+      border-bottom: 1px solid #eee;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .search-panel.show {
+      max-height: 120px;
+      padding: 1rem 1.2rem;
+    }
+
+    .search-panel form {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius-md);
+      border: 2px solid #eee;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .search-panel button {
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--radius-md);
+      background: var(--color-pink-main);
+      color: white;
+      font-weight: 600;
+    }
+
+    .search-status {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .hero-section {
+      background: linear-gradient(135deg, #fff, var(--color-accent-1));
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-subtle);
+      margin-bottom: 3rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: center;
+      grid-template-areas:
+        "content"
+        "visual";
+    }
+
+    @media (min-width: 900px) {
+      .hero-section {
+        grid-template-columns: 1.15fr 1fr;
+        grid-template-areas: "content visual";
+      }
+    }
+
+    .hero-content { grid-area: content; }
+    .hero-visual { grid-area: visual; }
+
+    .hero-content h1 {
+      font-size: clamp(2rem, 4vw, 2.7rem);
+      color: var(--color-pink-main);
+      margin-bottom: 1rem;
+      line-height: 1.15;
+    }
+
+    .hero-content p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 620px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .cta-primary {
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1.4rem;
+      font-weight: 600;
+      background: var(--color-pink-light);
+      color: var(--text-primary);
+    }
+
+    .cta-secondary {
+      border: 2px solid var(--color-dim-green);
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1.4rem;
+      font-weight: 600;
+      background: transparent;
+      color: var(--color-dim-green);
+    }
+
+    .hero-visual {
+      position: relative;
+      background: #fefcfa;
+      border-radius: var(--radius-lg);
+      min-height: 300px;
+      box-shadow: inset 0 0 0 2px rgba(231,210,202,0.4);
+      overflow: hidden;
+      justify-self: stretch;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #fdf2f6, #fde7ef);
+      box-shadow: 0 20px 40px rgba(237,158,160,0.25);
+    }
+
+    .desk-laptop,
+    .desk-notes,
+    .desk-pen,
+    .desk-headphones,
+    .desk-highlighter,
+    .desk-earbuds,
+    .desk-paper {
+      position: absolute;
+    }
+
+    .desk-laptop {
+      width: 56%;
+      height: 40%;
+      top: 14%;
+      right: 8%;
+      background: #d9d9d9;
+      border-radius: 18px;
+      box-shadow: inset 0 0 0 4px #f4f4f4;
+      z-index: 2;
+    }
+
+    .desk-laptop::after {
+      content: "";
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .desk-notes {
+      width: 49%;
+      height: 54%;
+      bottom: 10%;
+      left: 10%;
+      background: #ffeef1;
+      border-radius: 22px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      z-index: 2;
+    }
+
+    .desk-notes::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 16px;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          #fff 0,
+          #fff 16px,
+          #f7dbe2 16px,
+          #f7dbe2 32px
+        );
+    }
+
+    .desk-paper {
+      width: 34%;
+      height: 34%;
+      bottom: 9%;
+      right: 8%;
+      background: white;
+      border-radius: 10px;
+      transform: rotate(-8deg);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      z-index: 1;
+    }
+
+    .desk-paper::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      background:
+        linear-gradient(#f6bfd0 0 0) top/48% 18px no-repeat,
+        repeating-linear-gradient(180deg, #f3f3f3 0, #f3f3f3 9px, transparent 9px, transparent 18px);
+    }
+
+    .desk-pen {
+      width: 16%;
+      height: 18px;
+      bottom: 20%;
+      right: 18%;
+      background: linear-gradient(90deg, #fff 0 70%, #f4c8d1 70% 100%);
+      border-radius: 999px;
+      z-index: 3;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      transform: rotate(-18deg);
+    }
+
+    .desk-highlighter {
+      width: 14%;
+      height: 16px;
+      top: 30%;
+      left: 15%;
+      background: #f7c7d3;
+      border-radius: 999px;
+      z-index: 3;
+      transform: rotate(-24deg);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .desk-headphones {
+      width: 92px;
+      height: 92px;
+      top: 8%;
+      left: 8%;
+      border: 8px solid #f6c6d1;
+      border-radius: 50%;
+      z-index: 3;
+    }
+
+    .desk-headphones::before,
+    .desk-headphones::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 36px;
+      background: #f6c6d1;
+      bottom: -4px;
+      border-radius: 12px;
+    }
+
+    .desk-headphones::before { left: -6px; }
+    .desk-headphones::after { right: -6px; }
+
+    .desk-earbuds {
+      width: 28%;
+      height: 28%;
+      top: 34%;
+      left: 33%;
+      z-index: 2;
+    }
+
+    .desk-earbuds::before,
+    .desk-earbuds::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 22px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .desk-earbuds::before {
+      left: 0;
+      top: 0;
+      transform: rotate(22deg);
+    }
+
+    .desk-earbuds::after {
+      right: 0;
+      bottom: 0;
+      transform: rotate(-18deg);
+    }
+
+    .about-section {
+      margin-bottom: 3rem;
+    }
+
+    .about-section h2 {
+      font-size: 2rem;
+      color: var(--color-pink-main);
+      margin-bottom: 1rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .about-card {
+      background: white;
+      padding: 1.2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .about-card h4 {
+      color: var(--color-dim-green);
+      margin-bottom: 0.4rem;
+    }
+
+    .about-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 900px) {
+      .app-grid { grid-template-columns: 2fr 1fr; }
+    }
+
+    .feed-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--color-pastel-green);
+      background: white;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .filter-pill.active {
+      background: var(--color-pastel-green);
+      color: white;
+      border-color: var(--color-dim-green);
+    }
+
+    .feed-status {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .note-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      border-left: 6px solid var(--color-dim-green);
+      box-shadow: var(--shadow-subtle);
+      position: relative;
+      animation: fadeUp 0.45s ease;
+    }
+
+    .card-header,
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge {
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+      background: rgba(196,194,161,0.2);
+      color: var(--color-dim-green);
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .options-btn {
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      right: 1rem;
+      top: 3.2rem;
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      display: none;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .dropdown-menu.show { display: block; }
+
+    .dropdown-item {
+      padding: 0.7rem 1rem;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .dropdown-item:hover { background: #f8f8f8; }
+    .dropdown-item.danger:hover { background: #ffe8e8; color: #d32f2f; }
+
+    .author-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 1rem 0;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-accent-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .author-meta h4 {
+      font-size: 1rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .author-meta span {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .content-text {
+      line-height: 1.7;
+      color: #444;
+      margin-bottom: 1rem;
+    }
+
+    .edit-form { display: none; }
+    .card.edit-mode .content-text,
+    .card.edit-mode .attachments-wrap { display: none; }
+    .card.edit-mode .edit-form { display: block; }
+
+    .edit-textarea {
+      width: 100%;
+      min-height: 90px;
+      padding: 0.8rem;
+      border-radius: 10px;
+      border: 2px solid var(--color-pastel-green);
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .edit-actions {
+      margin-top: 0.7rem;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-small {
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .btn-save { background: var(--color-pink-main); color: white; }
+    .btn-cancel { background: #f0f0f0; color: #555; }
+
+    .action-btn {
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-family: inherit;
+    }
+
+    .liked .like-icon { color: var(--color-pink-main); }
+
+    .comments-wrapper {
+      display: none;
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 0.8rem;
+    }
+
+    .comments-wrapper.open {
+      display: block;
+      animation: expand 0.25s ease;
+    }
+
+    .comment-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 20px;
+      border: 1px solid #ddd;
+      margin-top: 0.7rem;
+      font-family: inherit;
+    }
+
+    .attachments-wrap {
+      margin-bottom: 1rem;
+    }
+
+    .attachments-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--color-dim-green);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .image-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #fff7f9;
+      border: 1px solid #f2dbe1;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+      background: #f5f5f5;
+    }
+
+    .image-card span {
+      display: block;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.7rem 0.85rem;
+      border-radius: 14px;
+      text-decoration: none;
+      background: #f8f8f8;
+      color: var(--text-primary);
+      border: 1px solid #ececec;
+      max-width: 100%;
+    }
+
+    .file-chip span {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+
+    .file-chip small {
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+    }
+
+    aside {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-subtle);
+      height: fit-content;
+    }
+
+    .profile-card {
+      background: var(--color-accent-1);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      color: white;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      background: white;
+      color: var(--color-pink-main);
+      border-radius: 50%;
+      margin: 0 auto 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+    }
+
+    .profile-card p,
+    .profile-card small {
+      opacity: 0.95;
+    }
+
+    .trend-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #f2f2f2;
+      padding: 0.6rem 0;
+      color: var(--text-secondary);
+      gap: 1rem;
+    }
+
+    .trend-count {
+      font-weight: 700;
+      color: var(--color-pink-main);
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3.2rem 1.2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(6px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      padding: 1rem;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 1.8rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      border-top: 10px solid var(--color-pink-main);
+      transform: scale(0.94);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .modal-overlay.visible .modal-box {
+      transform: scale(1);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.92rem;
+      margin-bottom: 0.45rem;
+      display: block;
+      color: var(--color-dim-green);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: 2px solid #eee;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: white;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+    }
+
+    .emoji-picker {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .emoji-option {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 0.45rem;
+      font-size: 1.25rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    .emoji-option.selected,
+    .emoji-option:hover {
+      border-color: var(--color-pink-main);
+      background: var(--color-pink-light);
+    }
+
+    .upload-preview {
+      margin-top: 0.8rem;
+      background: #fbfbfb;
+      border: 1px dashed #e5d1d8;
+      border-radius: 14px;
+      padding: 0.85rem;
+    }
+
+    .upload-preview.empty {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .upload-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+      gap: 0.7rem;
+    }
+
+    .upload-item {
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 0.6rem;
+      min-width: 0;
+    }
+
+    .upload-thumb {
+      width: 100%;
+      height: 82px;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+      background: #f2f2f2;
+      margin-bottom: 0.45rem;
+    }
+
+    .upload-file-icon {
+      height: 82px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff5f7;
+      font-size: 2rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .upload-name {
+      font-size: 0.8rem;
+      line-height: 1.35;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .upload-size {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .community-comments {
+      margin-top: 3rem;
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .community-comments h2 {
+      color: var(--color-pink-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .community-comments > p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .comment-board {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .comment-card {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      background: #fef8f9;
+      border-left: 4px solid var(--color-pink-main);
+    }
+
+    .comment-card h4 {
+      color: var(--color-dim-green);
+      margin-bottom: 0.35rem;
+    }
+
+    .comment-card small {
+      color: var(--text-secondary);
+    }
+
+    .comment-form {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .comment-form input,
+    .comment-form textarea {
+      padding: 0.85rem;
+      border-radius: var(--radius-md);
+      border: 2px solid #eee;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .comment-form button {
+      justify-self: flex-end;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-md);
+      background: var(--color-pink-main);
+      color: white;
+      font-weight: 600;
+      font-family: inherit;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(26px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes expand {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-
-<header>
+  <header>
     <div class="brand"><span style="font-size:2rem;">🪺</span>NoteNest</div>
     <div class="header-actions">
-        <button class="btn-link" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'});">About Us</button>
-        <button class="icon-btn" onclick="toggleSearchPanel()">🔍</button>
-        <button class="user-profile-btn" id="userAvatarBtn" onclick="toggleProfileMenu()">😊</button>
+      <button class="btn-link" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'});">About Us</button>
+      <button class="icon-btn" onclick="toggleSearchPanel()" aria-label="Search notes">🔍</button>
+      <button class="user-profile-btn" id="userAvatarBtn" onclick="toggleProfileMenu()" aria-label="Profile menu">😊</button>
     </div>
-</header>
+  </header>
 
-<div class="profile-menu" id="profileMenu">
+  <div class="profile-menu" id="profileMenu">
     <button onclick="openProfileModal()">Edit Profile</button>
     <button onclick="openNoteModal()">Share a Note</button>
-</div>
+  </div>
 
-<div class="search-panel" id="searchPanel">
+  <div class="search-panel" id="searchPanel">
     <form onsubmit="event.preventDefault();">
-        <input id="searchInput" class="search-input" type="text" placeholder="Search subjects, authors, or keywords…" oninput="handleSearchInput(event)">
-        <button type="button" onclick="clearSearch()">Clear</button>
+      <input id="searchInput" class="search-input" type="text" placeholder="Search subjects, authors, keywords, or file names…" oninput="handleSearchInput(event)" />
+      <button type="button" onclick="clearSearch()">Clear</button>
     </form>
     <div class="search-status" id="searchStatus">Browsing all shared notes.</div>
-</div>
+  </div>
 
-<main>
+  <main>
     <section class="hero-section" id="home">
-        <div class="hero-content">
-            <h1>NoteNest is your cozy campus for collaborative studying.</h1>
-            <p>Swap summaries, doodles, and lightbulb moments in a supportive space that blends creativity with productivity. Every shared page helps another learner take flight.</p>
-            <div class="cta-row">
-                <button class="cta-primary" onclick="document.getElementById('feedSection').scrollIntoView({behavior:'smooth'});">Scroll to Notes</button>
-                <button class="cta-secondary" onclick="openNoteModal()">Post a Note</button>
-            </div>
+      <div class="hero-content">
+        <h1>NoteNest is your cozy campus for collaborative studying.</h1>
+        <p>
+          Swap summaries, doodles, lightbulb moments, and helpful resources in a supportive space
+          that blends creativity with productivity. Every shared page helps another learner take flight.
+        </p>
+        <div class="cta-row">
+          <button class="cta-primary" onclick="document.getElementById('feedSection').scrollIntoView({behavior:'smooth'});">Scroll to Notes</button>
+          <button class="cta-secondary" onclick="openNoteModal()">Post a Note</button>
         </div>
-        <div class="hero-visual">
-            <img src="131bf363-0d9c-4e77-91b4-680e526d3340.jpg" alt="Pink aesthetic study desk with headphones, laptop, and notes" class="hero-image">
-        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="desk-laptop"></div>
+        <div class="desk-notes"></div>
+        <div class="desk-paper"></div>
+        <div class="desk-pen"></div>
+        <div class="desk-highlighter"></div>
+        <div class="desk-headphones"></div>
+        <div class="desk-earbuds"></div>
+      </div>
     </section>
 
     <section class="about-section" id="about">
-        <h2>About NoteNest</h2>
-        <div class="about-grid">
-            <div class="about-card">
-                <h4>What we are</h4>
-                <p>A living wall of student-crafted notes with built-in reactions, comments, and tidy editing tools so study sessions feel human and organized.</p>
-            </div>
-            <div class="about-card">
-                <h4>Who we serve</h4>
-                <p>From freshmen to grad cohorts, NoteNest welcomes visual learners, club study groups, and solo scholars who thrive with community energy.</p>
-            </div>
-            <div class="about-card">
-                <h4>Why we built it</h4>
-                <p>Studying shouldn't feel lonely. NoteNest turns individual progress into shared momentum, letting everyone uplift each other's learning.</p>
-            </div>
+      <h2>About NoteNest</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <h4>What we are</h4>
+          <p>A living wall of student-crafted notes with built-in reactions, comments, and tidy editing tools so study sessions feel human and organized.</p>
         </div>
+        <div class="about-card">
+          <h4>Who we serve</h4>
+          <p>From freshmen to grad cohorts, NoteNest welcomes visual learners, club study groups, and solo scholars who thrive with community energy.</p>
+        </div>
+        <div class="about-card">
+          <h4>Why we built it</h4>
+          <p>Studying shouldn’t feel lonely. NoteNest turns individual progress into shared momentum, letting everyone uplift each other’s learning.</p>
+        </div>
+      </div>
     </section>
 
     <div class="app-grid" id="feedSection">
-        <section>
-            <div class="feed-controls">
-                <span class="filter-pill active">For You</span>
-                <span class="filter-pill">Popular</span>
-                <span class="filter-pill">Latest</span>
-            </div>
-            <div class="feed-status" id="resultCount"></div>
-            <div id="feed-container" class="note-list"></div>
-        </section>
+      <section>
+        <div class="feed-controls">
+          <span class="filter-pill active">For You</span>
+          <span class="filter-pill">Popular</span>
+          <span class="filter-pill">Latest</span>
+        </div>
+        <div class="feed-status" id="resultCount"></div>
+        <div id="feed-container" class="note-list"></div>
+      </section>
 
-        <aside>
-            <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">😊</div>
-                <h4 id="profileName">New Student</h4>
-                <p id="profileMajor">Choose your major</p>
-                <small id="profileBio">Tap the avatar menu to personalize your nest.</small>
-            </div>
-            <h3 style="color:var(--color-dim-green); margin-bottom:0.5rem;">Trending Subjects 🔥</h3>
-            <div id="trendingContainer">
-                <div class="empty-state" style="padding: 1rem;">
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">No trending subjects yet. Be the first to share!</p>
-                </div>
-            </div>
-        </aside>
+      <aside>
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">😊</div>
+          <h4 id="profileName">New Student</h4>
+          <p id="profileMajor">Choose your major</p>
+          <small id="profileBio">Tap the avatar menu to personalize your nest.</small>
+        </div>
+
+        <h3 style="color:var(--color-dim-green); margin-bottom:0.5rem;">Trending Subjects 🔥</h3>
+        <div id="trendingContainer"></div>
+      </aside>
     </div>
 
     <section class="community-comments" id="community">
-        <h2>Leave a NoteNest Shout-out</h2>
-        <p style="color:var(--text-secondary);">Have feedback, gratitude, or a study mantra? Drop it below so the community can feel the love.</p>
-        <div class="comment-board" id="commentList"></div>
-        <form class="comment-form" id="commentForm" onsubmit="handleCommentPost(event)">
-            <input type="text" id="commentName" placeholder="Your name or nickname">
-            <textarea id="commentMessage" rows="4" placeholder="Share your comment…" required></textarea>
-            <button type="submit">Send ❤️</button>
-        </form>
+      <h2>Leave a NoteNest Shout-out</h2>
+      <p>Have feedback, gratitude, or a study mantra? Drop it below so the community can feel the love.</p>
+      <div class="comment-board" id="commentList"></div>
+      <form class="comment-form" id="commentForm" onsubmit="handleCommentPost(event)">
+        <input type="text" id="commentName" placeholder="Your name or nickname" />
+        <textarea id="commentMessage" rows="4" placeholder="Share your comment…" required></textarea>
+        <button type="submit">Send ❤️</button>
+      </form>
     </section>
-</main>
+  </main>
 
-<!-- Note Modal -->
-<div class="modal-overlay" id="noteModal">
+  <div class="modal-overlay" id="noteModal">
     <div class="modal-box">
-        <h2 style="color:var(--color-pink-main); margin-bottom:1rem;">Share New Notes</h2>
-        <form id="noteForm" onsubmit="handleNotePost(event)">
-            <div class="form-group">
-                <label class="form-label">Subject</label>
-                <input class="form-control" id="noteSubjectInput" placeholder="e.g., Microbiology" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Summary / Key Takeaways</label>
-                <textarea class="form-control" id="noteContentInput" rows="5" placeholder="Bullet points, mnemonics, diagrams…" required></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">Publish ✨</button>
-            </div>
-        </form>
-    </div>
-</div>
+      <h2 style="color:var(--color-pink-main); margin-bottom:1rem;">Share New Notes</h2>
+      <form id="noteForm" onsubmit="handleNotePost(event)">
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input class="form-control" id="noteSubjectInput" placeholder="e.g., Microbiology" required />
+        </div>
 
-<!-- Profile Modal -->
-<div class="modal-overlay" id="profileModal">
+        <div class="form-group">
+          <label class="form-label">Summary / Key Takeaways</label>
+          <textarea class="form-control" id="noteContentInput" rows="5" placeholder="Bullet points, mnemonics, diagrams…" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Add files or images</label>
+          <input class="form-control" id="noteFileInput" type="file" multiple onchange="previewSelectedFiles()" />
+          <div class="upload-preview empty" id="uploadPreview">No files selected yet. You can add images, PDFs, slides, or other study files.</div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Publish ✨</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="profileModal">
     <div class="modal-box">
-        <h2 style="color:var(--color-pink-main); margin-bottom:1rem;">Set Up Your Profile</h2>
-        <form id="profileForm" onsubmit="handleProfileUpdate(event)">
-            <div class="form-group">
-                <label class="form-label">Choose Your Avatar</label>
-                <div class="emoji-picker" id="emojiPicker"></div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Full Name</label>
-                <input class="form-control" id="profileNameInput" required placeholder="Your name">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Major / Field</label>
-                <input class="form-control" id="profileMajorInput" placeholder="e.g., Biomedical Engineering">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Bio</label>
-                <textarea class="form-control" id="profileBioInput" rows="3" placeholder="Let classmates know what lights you up."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Profile</button>
-            </div>
-        </form>
-    </div>
-</div>
+      <h2 style="color:var(--color-pink-main); margin-bottom:1rem;">Set Up Your Profile</h2>
+      <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+        <div class="form-group">
+          <label class="form-label">Choose Your Avatar</label>
+          <div class="emoji-picker" id="emojiPicker"></div>
+        </div>
 
-<script>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" id="profileNameInput" required placeholder="Your name" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Major / Field</label>
+          <input class="form-control" id="profileMajorInput" placeholder="e.g., Biomedical Engineering" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" id="profileBioInput" rows="3" placeholder="Let classmates know what lights you up."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
     let selectedEmoji = "😊";
     let searchQuery = "";
     let profileMenuOpen = false;
+    let tempPreviewUrls = [];
 
     let currentUser = {
-        name: "New Student",
-        avatar: "😊",
-        major: "Choose your major",
-        bio: "Tap the avatar menu to personalize your nest."
+      name: "New Student",
+      avatar: "😊",
+      major: "Choose your major",
+      bio: "Tap the avatar menu to personalize your nest."
     };
 
-    // Fresh empty website - no example data
     let notes = [];
     let boardComments = [];
 
-    const feedContainer = document.getElementById('feed-container');
-    const profileAvatar = document.getElementById('profileAvatar');
-    const profileName = document.getElementById('profileName');
-    const profileMajor = document.getElementById('profileMajor');
-    const profileBio = document.getElementById('profileBio');
-    const userAvatarBtn = document.getElementById('userAvatarBtn');
-    const noteModal = document.getElementById('noteModal');
-    const profileModal = document.getElementById('profileModal');
-    const emojiPicker = document.getElementById('emojiPicker');
-    const profileMenu = document.getElementById('profileMenu');
-    const searchPanel = document.getElementById('searchPanel');
-    const searchStatus = document.getElementById('searchStatus');
-    const resultCount = document.getElementById('resultCount');
-    const commentList = document.getElementById('commentList');
+    const feedContainer = document.getElementById("feed-container");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileName = document.getElementById("profileName");
+    const profileMajor = document.getElementById("profileMajor");
+    const profileBio = document.getElementById("profileBio");
+    const userAvatarBtn = document.getElementById("userAvatarBtn");
+    const noteModal = document.getElementById("noteModal");
+    const profileModal = document.getElementById("profileModal");
+    const emojiPicker = document.getElementById("emojiPicker");
+    const profileMenu = document.getElementById("profileMenu");
+    const searchPanel = document.getElementById("searchPanel");
+    const searchStatus = document.getElementById("searchStatus");
+    const resultCount = document.getElementById("resultCount");
+    const commentList = document.getElementById("commentList");
+    const trendingContainer = document.getElementById("trendingContainer");
+    const noteFileInput = document.getElementById("noteFileInput");
+    const uploadPreview = document.getElementById("uploadPreview");
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, function(char) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[char];
+      });
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes && bytes !== 0) return "";
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function revokeNoteAttachmentUrls(note) {
+      if (!note || !note.attachments) return;
+      note.attachments.forEach(file => {
+        if (file.url) URL.revokeObjectURL(file.url);
+      });
+    }
+
+    function clearTempPreviewUrls() {
+      tempPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+      tempPreviewUrls = [];
+    }
+
+    function buildAttachmentsHTML(note) {
+      if (!note.attachments || !note.attachments.length) return "";
+
+      const imageFiles = note.attachments.filter(file => file.isImage);
+      const otherFiles = note.attachments.filter(file => !file.isImage);
+
+      let html = `<div class="attachments-wrap"><div class="attachments-label">Attachments</div>`;
+
+      if (imageFiles.length) {
+        html += `<div class="image-grid">`;
+        imageFiles.forEach(file => {
+          html += `
+            <a class="image-card" href="${file.url}" download="${escapeHTML(file.name)}" title="${escapeHTML(file.name)}">
+              <img src="${file.url}" alt="${escapeHTML(file.name)}" />
+              <span>${escapeHTML(file.name)}</span>
+            </a>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      if (otherFiles.length) {
+        html += `<div class="file-list">`;
+        otherFiles.forEach(file => {
+          html += `
+            <a class="file-chip" href="${file.url}" download="${escapeHTML(file.name)}" title="${escapeHTML(file.name)}">
+              <span>📎 ${escapeHTML(file.name)}</span>
+              <small>${escapeHTML(formatFileSize(file.size))}</small>
+            </a>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      return html;
+    }
 
     function renderFeed() {
-        feedContainer.innerHTML = '';
-        const filtered = notes.filter(note => {
-            if (!searchQuery) return true;
-            const haystack = (note.subject + note.content + note.author).toLowerCase();
-            return haystack.includes(searchQuery);
-        });
-        resultCount.textContent = `${filtered.length} note${filtered.length !== 1 ? 's' : ''} on the board`;
-        
-        if (filtered.length === 0) {
-            feedContainer.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🪺</div>
-                    <h3 style="color: var(--color-pink-main); margin-bottom: 0.5rem;">No notes yet!</h3>
-                    <p style="max-width: 400px; margin: 0 auto 1.5rem;">This nest is ready for your knowledge. Be the first to share your notes and start the conversation.</p>
-                    <button class="cta-primary" onclick="openNoteModal()" style="padding: 0.8rem 1.6rem;">Share Your First Note ✨</button>
+      feedContainer.innerHTML = "";
+
+      const filtered = notes.filter(note => {
+        if (!searchQuery) return true;
+        const attachmentNames = (note.attachments || []).map(file => file.name).join(" ");
+        const haystack = [
+          note.subject,
+          note.content,
+          note.author,
+          note.major,
+          attachmentNames
+        ].join(" ").toLowerCase();
+        return haystack.includes(searchQuery);
+      });
+
+      resultCount.textContent = `${filtered.length} note${filtered.length !== 1 ? "s" : ""} on the board`;
+
+      if (filtered.length === 0) {
+        const message = searchQuery
+          ? `No notes match “${escapeHTML(searchQuery)}” yet. Try another keyword or share the first one.`
+          : `This nest is ready for your knowledge. Be the first to share your notes and start the conversation.`;
+
+        feedContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🪺</div>
+            <h3 style="color: var(--color-pink-main); margin-bottom: 0.5rem;">No notes yet!</h3>
+            <p style="max-width: 420px; margin: 0 auto 1.5rem;">${message}</p>
+            <button class="cta-primary" onclick="openNoteModal()">Share Your First Note ✨</button>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(note => {
+        const comments = (note.comments || [])
+          .map(c => `<div style="padding:4px 0; font-size:0.9rem;">💬 ${escapeHTML(c)}</div>`)
+          .join("");
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `note-${note.id}`;
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="badge">${escapeHTML(note.subject)}</span>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <small style="color:#999;">${escapeHTML(note.date)}</small>
+              ${note.isOwner ? `
+                <div class="card-options">
+                  <button class="options-btn" onclick="toggleOptions(${note.id})">⋮</button>
+                  <div class="dropdown-menu" id="options-${note.id}">
+                    <button class="dropdown-item" onclick="editNote(${note.id})">✏️ Edit</button>
+                    <button class="dropdown-item danger" onclick="deleteNote(${note.id})">🗑️ Delete</button>
+                  </div>
                 </div>
-            `;
-            return;
-        }
-        
-        filtered.forEach(note => {
-            const comments = note.comments.map(c => `<div style="padding:4px 0; font-size:0.9rem;">💬 ${c}</div>`).join('');
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.id = `note-${note.id}`;
-            card.innerHTML = `
-                <div class="card-header">
-                    <span class="badge">${note.subject}</span>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <small style="color:#999;">${note.date}</small>
-                        ${note.isOwner ? `
-                        <div class="card-options">
-                            <button class="options-btn" onclick="toggleOptions(${note.id})">⋮</button>
-                            <div class="dropdown-menu" id="options-${note.id}">
-                                <button class="dropdown-item" onclick="editNote(${note.id})">✏️ Edit</button>
-                                <button class="dropdown-item danger" onclick="deleteNote(${note.id})">🗑️ Delete</button>
-                            </div>
-                        </div>` : ''}
-                    </div>
-                </div>
-                <div class="author-row" onclick="viewProfile('${note.author}')">
-                    <div class="avatar">${note.avatar}</div>
-                    <div class="author-meta">
-                        <h4>${note.author}</h4>
-                        <span>${note.major} • Shared a note</span>
-                    </div>
-                </div>
-                <div class="content-text">${note.content.replace(/\n/g, '<br>')}</div>
-                <div class="edit-form">
-                    <textarea class="edit-textarea" id="edit-content-${note.id}">${note.content}</textarea>
-                    <div class="edit-actions">
-                        <button class="btn-small btn-save" onclick="saveEdit(${note.id})">Save</button>
-                        <button class="btn-small btn-cancel" onclick="cancelEdit(${note.id})">Cancel</button>
-                    </div>
-                </div>
-                <div class="card-actions">
-                    <button class="action-btn ${note.likedByMe ? 'liked' : ''}" onclick="toggleLike(${note.id})">
-                        <span class="like-icon">${note.likedByMe ? '❤️' : '🤍'}</span>${note.likes} Likes
-                    </button>
-                    <button class="action-btn" onclick="toggleComments(${note.id})">💬 Discuss</button>
-                </div>
-                <div class="comments-wrapper" id="comments-${note.id}">
-                    ${comments}
-                    <input class="comment-input" placeholder="Write a reply..." onkeypress="if(event.key==='Enter') submitComment(${note.id}, this)">
-                </div>`;
-            feedContainer.appendChild(card);
-        });
+              ` : ""}
+            </div>
+          </div>
+
+          <div class="author-row" onclick="viewProfile('${escapeHTML(note.author)}')">
+            <div class="avatar">${note.avatar}</div>
+            <div class="author-meta">
+              <h4>${escapeHTML(note.author)}</h4>
+              <span>${escapeHTML(note.major)} • Shared a note</span>
+            </div>
+          </div>
+
+          <div class="content-text">${escapeHTML(note.content).replace(/\n/g, "<br>")}</div>
+          ${buildAttachmentsHTML(note)}
+
+          <div class="edit-form">
+            <textarea class="edit-textarea" id="edit-content-${note.id}">${escapeHTML(note.content)}</textarea>
+            <div class="edit-actions">
+              <button class="btn-small btn-save" onclick="saveEdit(${note.id})">Save</button>
+              <button class="btn-small btn-cancel" onclick="cancelEdit(${note.id})">Cancel</button>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="action-btn ${note.likedByMe ? "liked" : ""}" onclick="toggleLike(${note.id})">
+              <span class="like-icon">${note.likedByMe ? "❤️" : "🤍"}</span>${note.likes} Likes
+            </button>
+            <button class="action-btn" onclick="toggleComments(${note.id})">💬 Discuss</button>
+          </div>
+
+          <div class="comments-wrapper" id="comments-${note.id}">
+            ${comments || `<div style="font-size:0.9rem; color:#888;">No replies yet. Start the conversation!</div>`}
+            <input class="comment-input" placeholder="Write a reply..." onkeypress="if(event.key==='Enter'){submitComment(${note.id}, this)}" />
+          </div>
+        `;
+        feedContainer.appendChild(card);
+      });
+    }
+
+    function renderTrendingSubjects() {
+      trendingContainer.innerHTML = "";
+
+      if (!notes.length) {
+        trendingContainer.innerHTML = `
+          <div class="empty-state" style="padding: 1rem;">
+            <p style="font-size:0.92rem;">No trending subjects yet. Be the first to share!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const counts = {};
+      notes.forEach(note => {
+        const subject = (note.subject || "").trim();
+        if (!subject) return;
+        counts[subject] = (counts[subject] || 0) + 1;
+      });
+
+      const subjects = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 6);
+
+      if (!subjects.length) {
+        trendingContainer.innerHTML = `
+          <div class="empty-state" style="padding: 1rem;">
+            <p style="font-size:0.92rem;">No trending subjects yet. Be the first to share!</p>
+          </div>
+        `;
+        return;
+      }
+
+      subjects.forEach(([subject, count]) => {
+        const item = document.createElement("div");
+        item.className = "trend-item";
+        item.innerHTML = `
+          <span>${escapeHTML(subject)}</span>
+          <span class="trend-count">${count}</span>
+        `;
+        trendingContainer.appendChild(item);
+      });
     }
 
     function renderProfile() {
-        profileAvatar.textContent = currentUser.avatar;
-        profileName.textContent = currentUser.name;
-        profileMajor.textContent = currentUser.major;
-        profileBio.textContent = currentUser.bio;
-        userAvatarBtn.textContent = currentUser.avatar;
+      profileAvatar.textContent = currentUser.avatar;
+      profileName.textContent = currentUser.name;
+      profileMajor.textContent = currentUser.major;
+      profileBio.textContent = currentUser.bio;
+      userAvatarBtn.textContent = currentUser.avatar;
     }
 
     function populateEmojiPicker() {
-        const emojis = ["😊","👩‍🎓","👨‍🎓","🤓","😎","🌟","🎨","📚","⚗️","🏛️","🎭","🎵"];
-        emojiPicker.innerHTML = '';
-        emojis.forEach(emoji => {
-            const btn = document.createElement('button');
-            btn.type = "button";
-            btn.className = `emoji-option ${emoji === selectedEmoji ? 'selected' : ''}`;
-            btn.textContent = emoji;
-            btn.addEventListener('click', (e) => {
-                selectedEmoji = emoji;
-                document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('selected'));
-                e.currentTarget.classList.add('selected');
-            });
-            emojiPicker.appendChild(btn);
-        });
+      const emojis = ["😊","👩‍🎓","👨‍🎓","🤓","😎","🌟","🎨","📚","⚗️","🏛️","🎭","🎵"];
+      emojiPicker.innerHTML = "";
+      emojis.forEach(emoji => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `emoji-option ${emoji === selectedEmoji ? "selected" : ""}`;
+        btn.textContent = emoji;
+        btn.onclick = (e) => {
+          selectedEmoji = emoji;
+          document.querySelectorAll(".emoji-option").forEach(b => b.classList.remove("selected"));
+          e.currentTarget.classList.add("selected");
+        };
+        emojiPicker.appendChild(btn);
+      });
     }
 
     function renderComments() {
-        commentList.innerHTML = '';
-        
-        if (boardComments.length === 0) {
-            commentList.innerHTML = `
-                <div class="empty-state" style="padding: 2rem;">
-                    <div class="empty-state-icon">💬</div>
-                    <p>No comments yet. Be the first to leave a shout-out!</p>
-                </div>
-            `;
-            return;
+      commentList.innerHTML = "";
+
+      if (!boardComments.length) {
+        commentList.innerHTML = `
+          <div class="empty-state" style="padding: 2rem;">
+            <div class="empty-state-icon">💬</div>
+            <p>No comments yet. Be the first to leave a shout-out!</p>
+          </div>
+        `;
+        return;
+      }
+
+      boardComments.forEach(comment => {
+        const card = document.createElement("div");
+        card.className = "comment-card";
+        card.innerHTML = `
+          <h4>${escapeHTML(comment.name || "Anonymous Owl")}</h4>
+          <p>${escapeHTML(comment.message)}</p>
+          <small>${escapeHTML(comment.timestamp)}</small>
+        `;
+        commentList.appendChild(card);
+      });
+    }
+
+    function previewSelectedFiles() {
+      clearTempPreviewUrls();
+
+      const files = Array.from(noteFileInput.files || []);
+      if (!files.length) {
+        uploadPreview.className = "upload-preview empty";
+        uploadPreview.innerHTML = "No files selected yet. You can add images, PDFs, slides, or other study files.";
+        return;
+      }
+
+      uploadPreview.className = "upload-preview";
+      let html = `<div class="upload-grid">`;
+
+      files.forEach(file => {
+        const isImage = file.type.startsWith("image/");
+        if (isImage) {
+          const url = URL.createObjectURL(file);
+          tempPreviewUrls.push(url);
+          html += `
+            <div class="upload-item">
+              <img class="upload-thumb" src="${url}" alt="${escapeHTML(file.name)}" />
+              <div class="upload-name">${escapeHTML(file.name)}</div>
+              <div class="upload-size">${escapeHTML(formatFileSize(file.size))}</div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="upload-item">
+              <div class="upload-file-icon">📄</div>
+              <div class="upload-name">${escapeHTML(file.name)}</div>
+              <div class="upload-size">${escapeHTML(formatFileSize(file.size))}</div>
+            </div>
+          `;
         }
-        
-        boardComments.forEach(comment => {
-            const card = document.createElement('div');
-            card.className = 'comment-card';
-            card.innerHTML = `<h4>${comment.name || "Anonymous Owl"}</h4><p>${comment.message}</p><small>${comment.timestamp}</small>`;
-            commentList.appendChild(card);
-        });
+      });
+
+      html += `</div>`;
+      uploadPreview.innerHTML = html;
+    }
+
+    function resetNoteComposer() {
+      document.getElementById("noteForm").reset();
+      clearTempPreviewUrls();
+      uploadPreview.className = "upload-preview empty";
+      uploadPreview.innerHTML = "No files selected yet. You can add images, PDFs, slides, or other study files.";
     }
 
     function toggleLike(id) {
-        const note = notes.find(n => n.id === id);
-        if (!note) return;
-        note.likedByMe = !note.likedByMe;
-        note.likes += note.likedByMe ? 1 : -1;
-        renderFeed();
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+      note.likedByMe = !note.likedByMe;
+      note.likes += note.likedByMe ? 1 : -1;
+      renderFeed();
     }
 
     function toggleComments(id) {
-        const wrapper = document.getElementById(`comments-${id}`);
-        if (wrapper) wrapper.classList.toggle('open');
+      const wrapper = document.getElementById(`comments-${id}`);
+      if (wrapper) wrapper.classList.toggle("open");
     }
 
     function submitComment(id, input) {
-        const text = input.value.trim();
-        if (!text) return;
-        const note = notes.find(n => n.id === id);
-        note.comments.push(text);
-        input.value = '';
-        renderFeed();
+      const text = input.value.trim();
+      if (!text) return;
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+      note.comments.push(text);
+      input.value = "";
+      renderFeed();
     }
 
     function toggleOptions(id) {
-        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
-        const menu = document.getElementById(`options-${id}`);
-        if (menu) menu.classList.add('show');
+      document.querySelectorAll(".dropdown-menu").forEach(menu => menu.classList.remove("show"));
+      const menu = document.getElementById(`options-${id}`);
+      if (menu) menu.classList.add("show");
     }
 
     function editNote(id) {
-        document.getElementById(`note-${id}`).classList.add('edit-mode');
-        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) noteEl.classList.add("edit-mode");
+      document.querySelectorAll(".dropdown-menu").forEach(menu => menu.classList.remove("show"));
     }
 
     function saveEdit(id) {
-        const textarea = document.getElementById(`edit-content-${id}`);
-        const note = notes.find(n => n.id === id);
-        note.content = textarea.value.trim();
-        document.getElementById(`note-${id}`).classList.remove('edit-mode');
-        renderFeed();
+      const textarea = document.getElementById(`edit-content-${id}`);
+      const note = notes.find(n => n.id === id);
+      if (!textarea || !note) return;
+      note.content = textarea.value.trim();
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) noteEl.classList.remove("edit-mode");
+      renderFeed();
     }
 
     function cancelEdit(id) {
-        document.getElementById(`note-${id}`).classList.remove('edit-mode');
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) noteEl.classList.remove("edit-mode");
     }
 
     function deleteNote(id) {
-        if (!confirm("Delete this note?")) return;
-        notes = notes.filter(n => n.id !== id);
-        renderFeed();
+      if (!confirm("Delete this note?")) return;
+      const note = notes.find(n => n.id === id);
+      revokeNoteAttachmentUrls(note);
+      notes = notes.filter(n => n.id !== id);
+      renderFeed();
+      renderTrendingSubjects();
     }
 
     function handleNotePost(e) {
-        e.preventDefault();
-        const subject = document.getElementById('noteSubjectInput').value.trim();
-        const content = document.getElementById('noteContentInput').value.trim();
-        const newNote = {
-            id: Date.now(),
-            author: currentUser.name,
-            avatar: currentUser.avatar,
-            major: currentUser.major,
-            subject,
-            date: "Just now",
-            content,
-            likes: 0,
-            likedByMe: false,
-            comments: [],
-            isOwner: true
-        };
-        notes.unshift(newNote);
-        renderFeed();
-        closeNoteModal();
-        e.target.reset();
+      e.preventDefault();
+
+      const subject = document.getElementById("noteSubjectInput").value.trim();
+      const content = document.getElementById("noteContentInput").value.trim();
+      const files = Array.from(noteFileInput.files || []);
+
+      const attachments = files.map(file => ({
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        size: file.size,
+        isImage: file.type.startsWith("image/"),
+        url: URL.createObjectURL(file)
+      }));
+
+      const newNote = {
+        id: Date.now(),
+        author: currentUser.name,
+        avatar: currentUser.avatar,
+        major: currentUser.major,
+        subject: subject || "General",
+        date: "Just now",
+        content,
+        likes: 0,
+        likedByMe: false,
+        comments: [],
+        isOwner: true,
+        attachments
+      };
+
+      notes.unshift(newNote);
+      renderFeed();
+      renderTrendingSubjects();
+      closeNoteModal();
     }
 
     function handleProfileUpdate(e) {
-        e.preventDefault();
-        currentUser = {
-            name: document.getElementById('profileNameInput').value.trim() || "Anonymous Owl",
-            avatar: selectedEmoji,
-            major: document.getElementById('profileMajorInput').value.trim() || "Curious Scholar",
-            bio: document.getElementById('profileBioInput').value.trim() || "Ready to share wisdom on NoteNest!"
-        };
-        notes.forEach(note => {
-            if (note.isOwner) {
-                note.author = currentUser.name;
-                note.avatar = currentUser.avatar;
-                note.major = currentUser.major;
-            }
-        });
-        renderProfile();
-        renderFeed();
-        closeProfileModal();
-        document.getElementById('profileForm').reset();
+      e.preventDefault();
+
+      currentUser = {
+        name: document.getElementById("profileNameInput").value.trim() || "Anonymous Owl",
+        avatar: selectedEmoji,
+        major: document.getElementById("profileMajorInput").value.trim() || "Curious Scholar",
+        bio: document.getElementById("profileBioInput").value.trim() || "Ready to share wisdom on NoteNest!"
+      };
+
+      notes.forEach(note => {
+        if (note.isOwner) {
+          note.author = currentUser.name;
+          note.avatar = currentUser.avatar;
+          note.major = currentUser.major;
+        }
+      });
+
+      renderProfile();
+      renderFeed();
+      closeProfileModal();
+      document.getElementById("profileForm").reset();
     }
 
     function handleCommentPost(e) {
-        e.preventDefault();
-        const name = document.getElementById('commentName').value.trim();
-        const message = document.getElementById('commentMessage').value.trim();
-        boardComments.unshift({
-            name: name || "Anonymous Owl",
-            message,
-            timestamp: new Date().toLocaleString()
-        });
-        renderComments();
-        e.target.reset();
+      e.preventDefault();
+      const name = document.getElementById("commentName").value.trim();
+      const message = document.getElementById("commentMessage").value.trim();
+      if (!message) return;
+
+      boardComments.unshift({
+        name: name || "Anonymous Owl",
+        message,
+        timestamp: new Date().toLocaleString()
+      });
+
+      renderComments();
+      e.target.reset();
     }
 
-    function openNoteModal() { noteModal.classList.add('visible'); }
-    function closeNoteModal() { noteModal.classList.remove('visible'); }
-    function openProfileModal() {
-        populateEmojiPicker();
-        document.getElementById('profileNameInput').value = currentUser.name === "New Student" ? "" : currentUser.name;
-        document.getElementById('profileMajorInput').value = currentUser.major.includes("Choose") ? "" : currentUser.major;
-        document.getElementById('profileBioInput').value = currentUser.bio.includes("Tap") ? "" : currentUser.bio;
-        profileModal.classList.add('visible');
+    function openNoteModal() {
+      noteModal.classList.add("visible");
     }
-    function closeProfileModal() { profileModal.classList.remove('visible'); }
+
+    function closeNoteModal() {
+      noteModal.classList.remove("visible");
+      resetNoteComposer();
+    }
+
+    function openProfileModal() {
+      populateEmojiPicker();
+      document.getElementById("profileNameInput").value = currentUser.name === "New Student" ? "" : currentUser.name;
+      document.getElementById("profileMajorInput").value = currentUser.major.includes("Choose") ? "" : currentUser.major;
+      document.getElementById("profileBioInput").value = currentUser.bio.includes("Tap") ? "" : currentUser.bio;
+      profileModal.classList.add("visible");
+    }
+
+    function closeProfileModal() {
+      profileModal.classList.remove("visible");
+    }
 
     function toggleProfileMenu() {
-        profileMenuOpen = !profileMenuOpen;
-        profileMenu.classList.toggle('show', profileMenuOpen);
+      profileMenuOpen = !profileMenuOpen;
+      profileMenu.classList.toggle("show", profileMenuOpen);
     }
 
     function toggleSearchPanel() {
-        searchPanel.classList.toggle('show');
-        if (searchPanel.classList.contains('show')) {
-            document.getElementById('searchInput').focus();
-        }
+      searchPanel.classList.toggle("show");
+      if (searchPanel.classList.contains("show")) {
+        document.getElementById("searchInput").focus();
+      }
     }
 
     function handleSearchInput(event) {
-        searchQuery = event.target.value.trim().toLowerCase();
-        searchStatus.textContent = searchQuery ? `Showing notes matching "${searchQuery}"` : 'Browsing all shared notes.';
-        renderFeed();
+      searchQuery = event.target.value.trim().toLowerCase();
+      searchStatus.textContent = searchQuery
+        ? `Showing notes matching “${searchQuery}”`
+        : "Browsing all shared notes.";
+      renderFeed();
     }
 
     function clearSearch() {
-        document.getElementById('searchInput').value = '';
-        searchQuery = '';
-        searchStatus.textContent = 'Browsing all shared notes.';
-        renderFeed();
+      document.getElementById("searchInput").value = "";
+      searchQuery = "";
+      searchStatus.textContent = "Browsing all shared notes.";
+      renderFeed();
     }
 
     function viewProfile(name) {
-        alert(`${name}'s full profile would appear here in a complete NoteNest build.`);
+      alert(`${name}'s full profile would appear here in a complete NoteNest build.`);
     }
 
-    window.addEventListener('click', (e) => {
-        if (e.target === noteModal) closeNoteModal();
-        if (e.target === profileModal) closeProfileModal();
-        if (!e.target.closest('.card-options')) {
-            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
-        }
-        if (!e.target.closest('#userAvatarBtn') && !e.target.closest('.profile-menu')) {
-            profileMenuOpen = false;
-            profileMenu.classList.remove('show');
-        }
+    window.addEventListener("click", (e) => {
+      if (e.target === noteModal) closeNoteModal();
+      if (e.target === profileModal) closeProfileModal();
+
+      if (!e.target.closest(".card-options")) {
+        document.querySelectorAll(".dropdown-menu").forEach(menu => menu.classList.remove("show"));
+      }
+
+      if (!e.target.closest("#userAvatarBtn") && !e.target.closest(".profile-menu")) {
+        profileMenuOpen = false;
+        profileMenu.classList.remove("show");
+      }
     });
 
     populateEmojiPicker();
     renderFeed();
+    renderTrendingSubjects();
     renderProfile();
     renderComments();
-</script>
-
+  </script>
 </body>
 </html>
