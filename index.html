@@ -162,9 +162,10 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 2rem;
+            align-items: center;
         }
         @media(min-width: 900px) {
-            .hero-section { grid-template-columns: 1.2fr 1fr; align-items: center; }
+            .hero-section { grid-template-columns: 1.2fr 1fr; }
         }
         .hero-content h1 {
             font-size: 2.5rem;
@@ -199,76 +200,13 @@
             border: 2px solid var(--color-dim-green);
         }
         .cta-secondary:hover { background: var(--color-dim-green); color: white; }
-        .hero-visual {
-            position: relative;
-            background: #fefcfa;
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            max-height: 400px;
+            object-fit: cover;
             border-radius: var(--radius-lg);
-            padding: 2rem;
-            min-height: 280px;
-            box-shadow: inset 0 0 0 2px rgba(231,210,202,0.4);
-        }
-        .hero-visual::before {
-            content: "";
-            position: absolute;
-            inset: 15px;
-            border-radius: var(--radius-md);
-            background: linear-gradient(145deg, #fdf2f6, #fde7ef);
-            box-shadow: 0 20px 40px rgba(237,158,160,0.25);
-        }
-        .desk-laptop, .desk-notes, .desk-pen, .desk-headphones, .desk-highlighter {
-            position: absolute;
-            border-radius: 12px;
-        }
-        .desk-laptop {
-            width: 55%;
-            height: 40%;
-            top: 18%;
-            right: 10%;
-            background: #d9d9d9;
-            border-radius: 16px;
-            box-shadow: inset 0 0 0 4px #f6f6f6;
-        }
-        .desk-notes {
-            width: 48%;
-            height: 55%;
-            bottom: 12%;
-            left: 12%;
-            background: #ffeef1;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
-        .desk-notes::after {
-            content: "";
-            position: absolute;
-            inset: 12px;
-            border-radius: 14px;
-            background: repeating-linear-gradient(180deg, #fff, #fff 16px, #f7dbe2 16px, #f7dbe2 32px);
-        }
-        .desk-pen {
-            width: 14%;
-            height: 5%;
-            bottom: 20%;
-            right: 20%;
-            background: #ffffff;
-            border-radius: 999px;
-            box-shadow: inset 0 -4px 0 #edc7cf;
-        }
-        .desk-highlighter {
-            width: 12%;
-            height: 4%;
-            top: 30%;
-            left: 18%;
-            background: #f7c7d3;
-            border-radius: 999px;
-        }
-        .desk-headphones {
-            width: 90px;
-            height: 90px;
-            top: 10%;
-            left: 10%;
-            border: 8px solid #f6c6d1;
-            border-radius: 50%;
-            position: absolute;
+            box-shadow: 0 20px 40px rgba(237,158,160,0.2);
         }
         .about-section {
             margin-bottom: 3rem;
@@ -464,6 +402,16 @@
             color: var(--text-secondary);
         }
         .trend-count { font-weight: 700; color: var(--color-pink-main); }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -616,11 +564,7 @@
             </div>
         </div>
         <div class="hero-visual">
-            <div class="desk-laptop"></div>
-            <div class="desk-notes"></div>
-            <div class="desk-pen"></div>
-            <div class="desk-highlighter"></div>
-            <div class="desk-headphones"></div>
+            <img src="131bf363-0d9c-4e77-91b4-680e526d3340.jpg" alt="Pink aesthetic study desk with headphones, laptop, and notes" class="hero-image">
         </div>
     </section>
 
@@ -637,7 +581,7 @@
             </div>
             <div class="about-card">
                 <h4>Why we built it</h4>
-                <p>Studying shouldn’t feel lonely. NoteNest turns individual progress into shared momentum, letting everyone uplift each other’s learning.</p>
+                <p>Studying shouldn't feel lonely. NoteNest turns individual progress into shared momentum, letting everyone uplift each other's learning.</p>
             </div>
         </div>
     </section>
@@ -661,10 +605,11 @@
                 <small id="profileBio">Tap the avatar menu to personalize your nest.</small>
             </div>
             <h3 style="color:var(--color-dim-green); margin-bottom:0.5rem;">Trending Subjects 🔥</h3>
-            <div class="trend-item"><span>Art History</span><span class="trend-count">12</span></div>
-            <div class="trend-item"><span>Calculus II</span><span class="trend-count">9</span></div>
-            <div class="trend-item"><span>Literature</span><span class="trend-count">7</span></div>
-            <div class="trend-item"><span>Sociology</span><span class="trend-count">3</span></div>
+            <div id="trendingContainer">
+                <div class="empty-state" style="padding: 1rem;">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">No trending subjects yet. Be the first to share!</p>
+                </div>
+            </div>
         </aside>
     </div>
 
@@ -742,39 +687,9 @@
         bio: "Tap the avatar menu to personalize your nest."
     };
 
-    let notes = [
-        {
-            id: 1,
-            author: "Sarah Jenkins",
-            avatar: "👩‍🎨",
-            major: "Art History",
-            subject: "Modern Art",
-            date: "2 hours ago",
-            content: "Impressionism cheat sheet:\n• Light > detail\n• Visible brush strokes\n• Everyday life scenes\nBring your sketchbook tomorrow! 🎨",
-            likes: 12,
-            likedByMe: false,
-            comments: ["Love this summary!", "Adding to my exam folder."],
-            isOwner: false
-        },
-        {
-            id: 2,
-            author: "Mike Ross",
-            avatar: "⚖️",
-            major: "Pre-Law",
-            subject: "Law 101",
-            date: "5 hours ago",
-            content: "Contracts formula: Offer + Acceptance + Consideration.\nRemember capacity & legality next week. Mnemonic: OACCL (Oak).",
-            likes: 8,
-            likedByMe: false,
-            comments: ["Exactly what I needed 🙌"],
-            isOwner: false
-        }
-    ];
-
-    let boardComments = [
-        { name: "Ivy", message: "Loving the pastel vibes—makes revising so much calmer.", timestamp: "Just now" },
-        { name: "Caleb", message: "Shared my chem quick guide and got instant feedback. Thanks NoteNest!", timestamp: "1 hr ago" }
-    ];
+    // Fresh empty website - no example data
+    let notes = [];
+    let boardComments = [];
 
     const feedContainer = document.getElementById('feed-container');
     const profileAvatar = document.getElementById('profileAvatar');
@@ -799,10 +714,19 @@
             return haystack.includes(searchQuery);
         });
         resultCount.textContent = `${filtered.length} note${filtered.length !== 1 ? 's' : ''} on the board`;
+        
         if (filtered.length === 0) {
-            feedContainer.innerHTML = `<div style="text-align:center; padding:2rem; color:#aaa;">No notes match “${searchQuery}”. Try another keyword! 🪺</div>`;
+            feedContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🪺</div>
+                    <h3 style="color: var(--color-pink-main); margin-bottom: 0.5rem;">No notes yet!</h3>
+                    <p style="max-width: 400px; margin: 0 auto 1.5rem;">This nest is ready for your knowledge. Be the first to share your notes and start the conversation.</p>
+                    <button class="cta-primary" onclick="openNoteModal()" style="padding: 0.8rem 1.6rem;">Share Your First Note ✨</button>
+                </div>
+            `;
             return;
         }
+        
         filtered.forEach(note => {
             const comments = note.comments.map(c => `<div style="padding:4px 0; font-size:0.9rem;">💬 ${c}</div>`).join('');
             const card = document.createElement('div');
@@ -879,6 +803,17 @@
 
     function renderComments() {
         commentList.innerHTML = '';
+        
+        if (boardComments.length === 0) {
+            commentList.innerHTML = `
+                <div class="empty-state" style="padding: 2rem;">
+                    <div class="empty-state-icon">💬</div>
+                    <p>No comments yet. Be the first to leave a shout-out!</p>
+                </div>
+            `;
+            return;
+        }
+        
         boardComments.forEach(comment => {
             const card = document.createElement('div');
             card.className = 'comment-card';
@@ -1020,7 +955,7 @@
 
     function handleSearchInput(event) {
         searchQuery = event.target.value.trim().toLowerCase();
-        searchStatus.textContent = searchQuery ? `Showing notes matching “${searchQuery}”` : 'Browsing all shared notes.';
+        searchStatus.textContent = searchQuery ? `Showing notes matching "${searchQuery}"` : 'Browsing all shared notes.';
         renderFeed();
     }
 
