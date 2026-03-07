@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteNest – Student Knowledge Community</title>
+    <style>
+        /* ===================== VARIABLES ===================== */
+        :root {
+            --pink-main: #ED9EA0;
+            --pink-light: #FDBAC2;
+            --beige: #E7D2CA;
+            --green-pale: #E7E5BF;
+            --green-dim: #C4C2A1;
+            --bg: #FAFBFB;
+            --white: #FFFFFF;
+            --text: #333333;
+            --muted: #777777;
+            --r-lg: 20px;
+            --r-md: 12px;
+            --r-sm: 8px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.07);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* ===================== PAGE SYSTEM ===================== */
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===================== COMMON BUTTONS ===================== */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 11px 26px; border: none; border-radius: var(--r-md);
+            font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s ease; text-decoration: none;
+        }
+        .btn-primary { background: var(--pink-main); color: white; box-shadow: 0 4px 12px rgba(237,158,160,0.4); }
+        .btn-primary:hover { background: #e08a8c; transform: translateY(-2px); }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-outline { background: transparent; color: var(--pink-main); border: 2px solid var(--pink-main); }
+        .btn-outline:hover { background: var(--pink-main); color: white; }
+        .btn-white { background: white; color: var(--text); border: 2px solid rgba(255,255,255,0.6); }
+        .btn-white:hover { background: rgba(255,255,255,0.85); }
+
+        /* ============================================================
+           LANDING PAGE
+        ============================================================ */
+        .land-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.1rem 2rem; position: fixed; top: 0; left: 0; right: 0;
+            z-index: 100; background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 3px solid var(--green-pale);
+        }
+        .brand { font-size: 1.5rem; font-weight: 800; color: var(--pink-main); display: flex; align-items: center; gap: 8px; }
+        .nav-actions { display: flex; gap: 10px; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(155deg, #FDBAC2 0%, #E7D2CA 45%, #E7E5BF 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 100px 2rem 5rem;
+            position: relative; overflow: hidden;
+        }
+
+        .petal {
+            position: absolute; font-size: 2.5rem;
+            opacity: 0.45; pointer-events: none;
+            animation: floatPetal linear infinite;
+        }
+        @keyframes floatPetal {
+            0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.5; }
+            90%  { opacity: 0.4; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        .hero-badge {
+            background: white; color: var(--pink-main);
+            font-size: 0.82rem; font-weight: 800; letter-spacing: 1.5px;
+            text-transform: uppercase; padding: 7px 18px;
+            border-radius: 20px; margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: softPulse 3s infinite;
+        }
+        @keyframes softPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(237,158,160,0.4); }
+            50%      { box-shadow: 0 0 0 12px rgba(237,158,160,0); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 6vw, 4.5rem);
+            font-weight: 900; color: white;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+            line-height: 1.15; margin-bottom: 1.2rem;
+        }
+        .hero p { font-size: 1.15rem; color: rgba(255,255,255,0.92); max-width: 580px; margin: 0 auto 2.5rem; }
+        .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+        .scroll-hint { position: absolute; bottom: 2rem; animation: bounce 2s infinite; font-size: 1.4rem; }
+        @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(9px); } }
+
+        /* Landing Sections */
+        .l-section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+        .section-label { font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--pink-main); margin-bottom: 0.7rem; }
+        .section-title { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; margin-bottom: 0.8rem; }
+        .section-desc { font-size: 1.05rem; color: var(--muted); max-width: 580px; line-height: 1.7; margin-bottom: 3rem; }
+
+        /* About Grid */
+        .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+        @media(max-width:700px){ .grid-3 { grid-template-columns: 1fr; } }
+
+        .info-card {
+            background: white; border-radius: var(--r-lg); padding: 2rem;
+            text-align: center; box-shadow: var(--shadow);
+            border-bottom: 5px solid var(--green-pale);
+            transition: transform 0.3s;
+        }
+        .info-card:hover { transform: translateY(-7px); }
+        .info-card .ic { font-size: 2.8rem; margin-bottom: 1rem; }
+        .info-card h3 { margin-bottom: 0.7rem; }
+        .info-card p { font-size: 0.93rem; color: var(--muted); line-height: 1.7; }
+
+        /* Who Section */
+        .who-bg { background: linear-gradient(to bottom, #fafbfb, #f2f0eb); padding: 5rem 2rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.4rem; }
+        @media(max-width:600px){ .grid-2 { grid-template-columns: 1fr; } }
+
+        .who-card {
+            background: linear-gradient(135deg, var(--beige), white);
+            border-radius: var(--r-lg); padding: 1.7rem;
+            box-shadow: var(--shadow); display: flex; align-items: flex-start;
+            gap: 1rem; transition: transform 0.3s;
+        }
+        .who-card:hover { transform: translateY(-5px); }
+        .who-icon { font-size: 2.5rem; flex-shrink: 0; }
+        .who-card h3 { margin-bottom: 5px; }
+        .who-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+        /* Why Section */
+        .why-box {
+            background: linear-gradient(135deg, var(--green-pale), var(--beige));
+            border-radius: var(--r-lg); padding: 3rem;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+        }
+        @media(max-width:700px){ .why-box { grid-template-columns: 1fr; } }
+        .why-story p { font-size: 1rem; line-height: 1.85; color: var(--text); margin-bottom: 1rem; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .stat-card { background: white; border-radius: var(--r-md); padding: 1.5rem; text-align: center; box-shadow: var(--shadow); }
+        .stat-num { font-size: 2.2rem; font-weight: 900; color: var(--pink-main); }
+        .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+
+        /* CTA + Footer */
+        .cta-strip { background: var(--pink-main); padding: 4.5rem 2rem; text-align: center; }
+        .cta-strip h2 { font-size: 2rem; color: white; margin-bottom: 1rem; }
+        .cta-strip p { color: rgba(255,255,255,0.85); font-size: 1.05rem; margin-bottom: 2rem; }
+        footer { background: #2a2a2a; color: #999; text-align: center; padding: 2rem; font-size: 0.88rem; }
+
+        /* ============================================================
+           AUTH PAGE
+        ============================================================ */
+        .auth-page {
+            min-height: 100vh;
+            background: linear-gradient(155deg, #FDBAC2 0%, #E7D2CA 45%, #E7E5BF 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem;
+        }
+        .auth-card {
+            background: white; border-radius: var(--r-lg);
+            padding: 2.5rem; width: 100%; max-width: 420px;
+            box-shadow: 0 12px 50px rgba(0,0,0,0.13);
+        }
+        .auth-logo { text-align: center; font-size: 1.8rem; font-weight: 900; color: var(--pink-main); margin-bottom: 4px; }
+        .auth-sub { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 1.8rem; }
+
+        .auth-tabs { display: flex; background: #f2f2f2; border-radius: var(--r-sm); overflow: hidden; margin-bottom: 1.5rem; }
+        .auth-tab {
+            flex: 1; padding: 10px; border: none; background: transparent;
+            cursor: pointer; font-weight: 700; color: var(--muted); transition: all 0.2s;
+        }
+        .auth-tab.active { background: white; color: var(--pink-main); border-radius: var(--r-sm); margin: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+
+        .social-btn {
+            width: 100%; display: flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 12px; border-radius: var(--r-sm); border: 2px solid #eee;
+            background: white; cursor: pointer; font-size: 0.93rem; font-weight: 700;
+            margin-bottom: 11px; transition: all 0.2s;
+        }
+        .social-btn.google { border-color: #4285F4; color: #4285F4; }
+        .social-btn.google:hover { background: #4285F4; color: white; }
+        .social-btn.fb { border-color: #1877F2; color: #1877F2; }
+        .social-btn.fb:hover { background: #1877F2; color: white; }
+
+        .divider { display: flex; align-items: center; gap: 10px; margin: 1rem 0; color: #ccc; font-size: 0.82rem; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #eee; }
+
+        .f-group { margin-bottom: 1rem; }
+        .f-label { display: block; font-size: 0.83rem; font-weight: 700; margin-bottom: 5px; color: var(--text); }
+        .f-input {
+            width: 100%; padding: 10px 13px; border: 2px solid #eee;
+            border-radius: var(--r-sm); font-size: 0.93rem; transition: border 0.2s;
+            font-family: inherit;
+        }
+        .f-input:focus { border-color: var(--pink-main); outline: none; }
+        .auth-foot { text-align: center; margin-top: 1.4rem; font-size: 0.85rem; color: var(--muted); }
+        .auth-link { color: var(--pink-main); cursor: pointer; font-weight: 700; }
+        .auth-link:hover { text-decoration: underline; }
+
+        /* ============================================================
+           PROFILE SETUP PAGE
+        ============================================================ */
+        .setup-page {
+            min-height: 100vh;
+            background: linear-gradient(155deg, #FDBAC2 0%, #E7D2CA 45%, #E7E5BF 100%);
+            display: flex; align-items: center; justify-content: center; padding: 2rem;
+        }
+        .setup-card {
+            background: white; border-radius: var(--r-lg);
+            padding: 2.5rem; width: 100%; max-width: 500px;
+            box-shadow: 0 12px 50px rgba(0,0,0,0.13);
+        }
+        .setup-step { display: none; }
+        .setup-step.active { display: block; animation: fadeIn 0.35s ease; }
+
+        .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 2rem; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #eee; transition: background 0.3s; }
+        .dot.on { background: var(--pink-main); }
+
+        .emoji-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 7px; margin-bottom: 1.5rem; }
+        .e-opt {
+            padding: 9px; border: 2px solid #eee; border-radius: 8px;
+            cursor: pointer; font-size: 1.3rem; text-align: center;
+            transition: all 0.2s; background: none;
+        }
+        .e-opt:hover { border-color: var(--pink-light); background: #fef6f7; }
+        .e-opt.sel { border-color: var(--pink-main); background: var(--pink-light); }
+
+        .setup-preview {
+            background: linear-gradient(135deg, var(--beige), var(--green-pale));
+            border-radius: var(--r-md); padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;
+        }
+        .preview-av { font-size: 3rem; margin-bottom: 8px; }
+        .preview-name { font-weight: 800; font-size: 1.1rem; }
+        .preview-major { font-size: 0.85rem; color: var(--muted); }
+
+        .setup-row { display: flex; gap: 10px; margin-top: 1rem; }
+
+        /* ============================================================
+           APP PAGE
+        ============================================================ */
+        .app-header {
+            background: rgba(255,255,255,0.97); padding: 1rem 2rem;
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 4px solid var(--green-pale);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .app-header-right { display: flex; gap: 10px; align-items: center; }
+        .avatar-btn {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: var(--beige); border: none; cursor: pointer;
+            font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s;
+        }
+        .avatar-btn:hover { transform: scale(1.1); }
+
+        .app-main {
+            max-width: 1000px; margin: 0 auto; padding: 2rem;
+            display: grid; grid-template-columns: 1fr; gap: 2rem;
+        }
+        @media(min-width: 768px){ .app-main { grid-template-columns: 2fr 1fr; } }
+
+        /* Filter pills */
+        .filter-row { display: flex; gap: 10px; margin-bottom: 1.2rem; }
+        .pill {
+            padding: 7px 16px; border-radius: 20px;
+            border: 1.5px solid var(--green-pale); background: white;
+            cursor: pointer; font-size: 0.87rem; color: var(--muted);
+            font-weight: 600; transition: all 0.2s;
+        }
+        .pill.on { background: var(--green-pale); color: #555; border-color: var(--green-dim); }
+
+        /* Note Cards */
+        .feed { display: flex; flex-direction: column; gap: 1.5rem; }
+        .note-card {
+            background: white; border-radius: var(--r-lg); padding: 1.5rem;
+            border-left: 6px solid var(--green-dim); box-shadow: var(--shadow);
+            animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+            transition: transform 0.2s;
+        }
+        .note-card:hover { transform: translateY(-4px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .subj-badge {
+            background: rgba(196,194,161,0.2); color: var(--green-dim);
+            font-size: 0.73rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 4px 10px; border-radius: 8px;
+        }
+        .card-top-right { display: flex; align-items: center; gap: 10px; }
+
+        .opt-wrap { position: relative; }
+        .opt-btn { background: none; border: none; cursor: pointer; font-size: 1.3rem; padding: 3px 8px; border-radius: 50%; transition: background 0.2s; }
+        .opt-btn:hover { background: #f0f0f0; }
+        .dd {
+            position: absolute; right: 0; top: calc(100% + 4px);
+            background: white; border: 1px solid #ddd; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12); min-width: 130px; z-index: 50;
+            display: none;
+        }
+        .dd.open { display: block; animation: dropIn 0.2s ease; }
+        @keyframes dropIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        .dd button { width: 100%; background: none; border: none; padding: 10px 14px; text-align: left; cursor: pointer; font-size: 0.9rem; color: var(--text); transition: background 0.2s; }
+        .dd button:hover { background: #f8f8f8; }
+        .dd button.del:hover { background: #fee; color: #c0392b; }
+
+        .author-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+        .note-av { width: 40px; height: 40px; background: var(--beige); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        .auth-name { font-weight: 800; font-size: 0.95rem; }
+        .auth-sub { font-size: 0.78rem; color: var(--muted); }
+
+        .note-body { font-size: 1rem; line-height: 1.75; color: #444; margin-bottom: 1.4rem; }
+
+        .edit-area { display: none; margin-bottom: 1.4rem; }
+        .edit-area textarea { width: 100%; padding: 10px; border: 2px solid var(--pink-light); border-radius: 8px; font-family: inherit; font-size: 1rem; resize: vertical; min-height: 80px; }
+        .edit-btns { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-xs { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.83rem; font-weight: 700; }
+        .btn-xs.save { background: var(--pink-main); color: white; }
+        .btn-xs.cancel { background: #eee; color: #666; }
+
+        .editing .note-body { display: none; }
+        .editing .edit-area { display: block; }
+
+        .card-foot { border-top: 1px dashed #eee; padding-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .act-btn {
+            background: none; border: none; display: flex; align-items: center;
+            gap: 6px; cursor: pointer; color: var(--muted); font-weight: 600;
+            padding: 5px 10px; border-radius: 6px; font-size: 0.88rem;
+            transition: background 0.2s;
+        }
+        .act-btn:hover { background: #f5f5f5; }
+        .act-btn.liked .hrt { color: var(--pink-main); }
+
+        .comments-box { margin-top: 1rem; background: #fafafa; border-radius: 12px; padding: 1rem; display: none; }
+        .comments-box.open { display: block; animation: expandDown 0.3s ease; }
+        @keyframes expandDown { from { opacity:0; } to { opacity:1; } }
+
+        .c-item { font-size: 0.85rem; padding: 5px 0; border-bottom: 1px solid #eee; color: #555; }
+        .c-item strong { color: var(--text); }
+
+        .c-row { display: flex; gap: 8px; margin-top: 10px; }
+        .c-inp { flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 7px 14px; font-size: 0.85rem; outline: none; transition: border 0.2s; font-family: inherit; }
+        .c-inp:focus { border-color: var(--pink-main); }
+        .c-send { background: var(--pink-main); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; flex-shrink: 0; }
+        .c-send:hover { transform: scale(1.1); }
+
+        /* Sidebar */
+        .sidebar { background: white; border-radius: var(--r-lg); padding: 1.5rem; box-shadow: var(--shadow); position: sticky; top: 80px; height: fit-content; }
+        .prof-mini { background: linear-gradient(135deg, var(--beige), var(--pink-light)); border-radius: var(--r-md); padding: 1.4rem; text-align: center; margin-bottom: 1.5rem; }
+        .prof-av { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 10px; }
+        .prof-name { font-weight: 800; font-size: 1rem; margin-bottom: 3px; }
+        .prof-major { font-size: 0.8rem; color: var(--muted); }
+        .prof-bio { font-size: 0.8rem; color: var(--muted); font-style: italic; margin-top: 6px; }
+
+        .sb-title { font-weight: 800; color: var(--green-dim); margin-bottom: 1rem; font-size: 0.95rem; }
+        .trend { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+        .trend-n { font-weight: 800; color: var(--pink-main); }
+
+        .tip-box { margin-top: 1.5rem; padding: 1rem; background: var(--green-pale); border-radius: 12px; text-align: center; font-size: 0.85rem; color: #555; }
+
+        /* Post + Profile Edit Modal */
+        .modal-bg {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(5px); display: flex; align-items: center;
+            justify-content: center; z-index: 500;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-bg.open { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: white; border-radius: var(--r-lg);
+            padding: 2rem; width: 90%; max-width: 480px;
+            box-shadow: 0 12px 50px rgba(0,0,0,0.15);
+            border-top: 8px solid var(--pink-main);
+            transform: scale(0.88);
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-bg.open .modal-box { transform: scale(1); }
+        .modal-title { font-size: 1.25rem; font-weight: 900; color: var(--pink-main); margin-bottom: 1.4rem; }
+        .m-group { margin-bottom: 1rem; }
+        .m-label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 5px; color: var(--green-dim); }
+        .m-input, .m-textarea { width: 100%; padding: 10px 13px; border: 2px solid #eee; border-radius: 8px; font-family: inherit; font-size: 0.93rem; transition: border 0.2s; }
+        .m-input:focus, .m-textarea:focus { border-color: var(--pink-light); outline: none; }
+        .m-textarea { resize: vertical; min-height: 100px; }
+        .modal-foot { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.4rem; }
+        .btn-cancel-sm { background: none; border: none; color: #aaa; cursor: pointer; font-size: 0.93rem; padding: 8px 14px; }
+
+        /* Loading Overlay */
+        .loading-cover {
+            position: fixed; inset: 0;
+            background: rgba(253,186,194,0.6);
+            backdrop-filter: blur(6px);
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .loading-cover.show { display: flex; }
+        .spin { font-size: 3.5rem; animation: rotate 1.2s linear infinite; margin-bottom: 1rem; }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+        .load-txt { color: white; font-weight: 800; font-size: 1.1rem; text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #333; color: white; padding: 12px 24px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 600; z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOADING COVER
+============================================================ -->
+<div class="loading-cover" id="loadingCover">
+    <div class="spin">🌸</div>
+    <div class="load-txt" id="loadTxt">Loading...</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Done!</div>
+
+<!-- ============================================================
+     PAGE 1: LANDING
+============================================================ -->
+<div id="page-landing" class="page active">
+    <nav class="land-nav">
+        <div class="brand">🌸 NoteNest</div>
+        <div class="nav-actions">
+            <button class="btn btn-outline" style="padding:8px 18px;font-size:0.88rem;" onclick="goAuth('login')">Log In</button>
+            <button class="btn btn-primary" style="padding:8px 18px;font-size:0.88rem;" onclick="goAuth('signup')">Get Started</button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero" id="heroSection">
+        <div class="hero-badge">🎓 For Students, By Students</div>
+        <h1>Learn Together,<br>Share Together</h1>
+        <p>NoteNest is the cozy space where students share notes, spark conversations, and make studying a little less lonely.</p>
+        <div class="hero-btns">
+            <button class="btn btn-primary" onclick="goAuth('signup')">Join for Free 🌸</button>
+            <button class="btn btn-white" onclick="goAuth('login')">I Already Have an Account</button>
+        </div>
+        <div class="scroll-hint">⬇️</div>
+    </div>
+
+    <!-- About -->
+    <section class="l-section" style="text-align:center;">
+        <div class="section-label">About NoteNest</div>
+        <h2 class="section-title">What Is NoteNest?</h2>
+        <p class="section-desc" style="margin: 0 auto 3rem;">A student-first community platform where knowledge flows freely — from sharing lecture summaries to discussing tough assignments together.</p>
+        <div class="grid-3">
+            <div class="info-card">
+                <div class="ic">📝</div>
+                <h3>Share Notes</h3>
+                <p>Post your study notes and summaries so classmates can learn from your hard work — and you from theirs.</p>
+            </div>
+            <div class="info-card">
+                <div class="ic">💬</div>
+                <h3>Start Discussions</h3>
+                <p>Comment, question, and collaborate. Every note is a conversation waiting to happen.</p>
+            </div>
+            <div class="info-card">
+                <div class="ic">❤️</div>
+                <h3>Build Community</h3>
+                <p>Connect with fellow students, discover great content, and grow your academic circle naturally.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who -->
+    <div class="who-bg">
+        <div style="max-width:1100px;margin:0 auto;">
+            <div class="section-label">Community</div>
+            <h2 class="section-title">Who Is NoteNest For?</h2>
+            <p class="section-desc">Whether you are cramming for finals in high school or diving into thesis work as a college junior, there is a place for you here.</p>
+            <div class="grid-2">
+                <div class="who-card">
+                    <div class="who-icon">🏫</div>
+                    <div>
+                        <h3>High School Students</h3>
+                        <p>Get ahead with notes from top-performing peers and community-sourced study guides for standardized tests.</p>
+                    </div>
+                </div>
+                <div class="who-card">
+                    <div class="who-icon">🎓</div>
+                    <div>
+                        <h3>College Students</h3>
+                        <p>Share lecture notes, collaborate on group projects, and help your entire class excel together.</p>
+                    </div>
+                </div>
+                <div class="who-card">
+                    <div class="who-icon">👥</div>
+                    <div>
+                        <h3>Study Groups</h3>
+                        <p>Create a shared repository of notes for your group with easy-to-find posts organized by subject.</p>
+                    </div>
+                </div>
+                <div class="who
