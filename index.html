@@ -1241,7 +1241,32 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp,
+      query, orderBy, onSnapshot, doc, updateDoc, deleteDoc,
+      increment, arrayUnion, arrayRemove
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoJxk2B5T3NAmXLSuEV7bFh4aqqnPW16c",
+      authDomain: "notesnest-b8dc0.firebaseapp.com",
+      projectId: "notesnest-b8dc0",
+      storageBucket: "notesnest-b8dc0.firebasestorage.app",
+      messagingSenderId: "363997128706",
+      appId: "1:363997128706:web:4ba7b92bb28dfbaa889f1b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    let uid = null;
+
     let selectedEmoji = "😊";
     let searchQuery = "";
     let profileMenuOpen = false;
@@ -1287,18 +1312,17 @@
       });
     }
 
+    function formatDate(ts) {
+      if (!ts) return "";
+      if (ts.toDate) return ts.toDate().toLocaleString();
+      return new Date(ts).toLocaleString();
+    }
+
     function formatFileSize(bytes) {
       if (!bytes && bytes !== 0) return "";
       if (bytes < 1024) return bytes + " B";
       if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
       return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-    }
-
-    function revokeNoteAttachmentUrls(note) {
-      if (!note || !note.attachments) return;
-      note.attachments.forEach(file => {
-        if (file.url) URL.revokeObjectURL(file.url);
-      });
     }
 
     function clearTempPreviewUrls() {
@@ -1380,7 +1404,11 @@
 
       filtered.forEach(note => {
         const comments = (note.comments || [])
-          .map(c => `<div style="padding:4px 0; font-size:0.9rem;">💬 ${escapeHTML(c)}</div>`)
+          .map(c => {
+            const text = typeof c === "string" ? c : c.text;
+            const author = typeof c === "string" ? "Student" : c.author;
+            return `<div style="padding:4px 0; font-size:0.9rem;">💬 ${escapeHTML(author)}: ${escapeHTML(text)}</div>`;
+          })
           .join("");
 
         const card = document.createElement("div");
@@ -1390,13 +1418,13 @@
           <div class="card-header">
             <span class="badge">${escapeHTML(note.subject)}</span>
             <div style="display:flex; gap:10px; align-items:center;">
-              <small style="color:#999;">${escapeHTML(note.date)}</small>
+              <small style="color:#999;">${escapeHTML(formatDate(note.createdAt) || "Just now")}</small>
               ${note.isOwner ? `
                 <div class="card-options">
-                  <button class="options-btn" onclick="toggleOptions(${note.id})">⋮</button>
+                  <button class="options-btn" onclick="toggleOptions('${note.id}')">⋮</button>
                   <div class="dropdown-menu" id="options-${note.id}">
-                    <button class="dropdown-item" onclick="editNote(${note.id})">✏️ Edit</button>
-                    <button class="dropdown-item danger" onclick="deleteNote(${note.id})">🗑️ Delete</button>
+                    <button class="dropdown-item" onclick="editNote('${note.id}')">✏️ Edit</button>
+                    <button class="dropdown-item danger" onclick="deleteNote('${note.id}')">🗑️ Delete</button>
                   </div>
                 </div>
               ` : ""}
@@ -1417,21 +1445,21 @@
           <div class="edit-form">
             <textarea class="edit-textarea" id="edit-content-${note.id}">${escapeHTML(note.content)}</textarea>
             <div class="edit-actions">
-              <button class="btn-small btn-save" onclick="saveEdit(${note.id})">Save</button>
-              <button class="btn-small btn-cancel" onclick="cancelEdit(${note.id})">Cancel</button>
+              <button class="btn-small btn-save" onclick="saveEdit('${note.id}')">Save</button>
+              <button class="btn-small btn-cancel" onclick="cancelEdit('${note.id}')">Cancel</button>
             </div>
           </div>
 
           <div class="card-actions">
-            <button class="action-btn ${note.likedByMe ? "liked" : ""}" onclick="toggleLike(${note.id})">
+            <button class="action-btn ${note.likedByMe ? "liked" : ""}" onclick="toggleLike('${note.id}')">
               <span class="like-icon">${note.likedByMe ? "❤️" : "🤍"}</span>${note.likes} Likes
             </button>
-            <button class="action-btn" onclick="toggleComments(${note.id})">💬 Discuss</button>
+            <button class="action-btn" onclick="toggleComments('${note.id}')">💬 Discuss</button>
           </div>
 
           <div class="comments-wrapper" id="comments-${note.id}">
             ${comments || `<div style="font-size:0.9rem; color:#888;">No replies yet. Start the conversation!</div>`}
-            <input class="comment-input" placeholder="Write a reply..." onkeypress="if(event.key==='Enter'){submitComment(${note.id}, this)}" />
+            <input class="comment-input" placeholder="Write a reply..." onkeypress="if(event.key==='Enter'){submitComment('${note.id}', this)}" />
           </div>
         `;
         feedContainer.appendChild(card);
@@ -1578,12 +1606,41 @@
       uploadPreview.innerHTML = "No files selected yet. You can add images, PDFs, slides, or other study files.";
     }
 
-    function toggleLike(id) {
+    async function uploadAttachments(files) {
+      const uploads = files.map(async (file) => {
+        const path = `notes/${uid}/${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        return {
+          name: file.name,
+          type: file.type || "application/octet-stream",
+          size: file.size,
+          isImage: file.type.startsWith("image/"),
+          url,
+          storagePath: path
+        };
+      });
+      return Promise.all(uploads);
+    }
+
+    async function toggleLike(id) {
       const note = notes.find(n => n.id === id);
-      if (!note) return;
-      note.likedByMe = !note.likedByMe;
-      note.likes += note.likedByMe ? 1 : -1;
-      renderFeed();
+      if (!note || !uid) return;
+
+      const refDoc = doc(db, "notes", id);
+
+      if (note.likedByMe) {
+        await updateDoc(refDoc, {
+          likes: increment(-1),
+          likedBy: arrayRemove(uid)
+        });
+      } else {
+        await updateDoc(refDoc, {
+          likes: increment(1),
+          likedBy: arrayUnion(uid)
+        });
+      }
     }
 
     function toggleComments(id) {
@@ -1591,14 +1648,20 @@
       if (wrapper) wrapper.classList.toggle("open");
     }
 
-    function submitComment(id, input) {
+    async function submitComment(id, input) {
       const text = input.value.trim();
       if (!text) return;
-      const note = notes.find(n => n.id === id);
-      if (!note) return;
-      note.comments.push(text);
+
+      const refDoc = doc(db, "notes", id);
+      const comment = {
+        text,
+        author: currentUser.name,
+        avatar: currentUser.avatar,
+        createdAt: new Date().toISOString()
+      };
+
+      await updateDoc(refDoc, { comments: arrayUnion(comment) });
       input.value = "";
-      renderFeed();
     }
 
     function toggleOptions(id) {
@@ -1613,14 +1676,16 @@
       document.querySelectorAll(".dropdown-menu").forEach(menu => menu.classList.remove("show"));
     }
 
-    function saveEdit(id) {
+    async function saveEdit(id) {
       const textarea = document.getElementById(`edit-content-${id}`);
-      const note = notes.find(n => n.id === id);
-      if (!textarea || !note) return;
-      note.content = textarea.value.trim();
+      if (!textarea) return;
+
+      await updateDoc(doc(db, "notes", id), {
+        content: textarea.value.trim()
+      });
+
       const noteEl = document.getElementById(`note-${id}`);
       if (noteEl) noteEl.classList.remove("edit-mode");
-      renderFeed();
     }
 
     function cancelEdit(id) {
@@ -1628,48 +1693,44 @@
       if (noteEl) noteEl.classList.remove("edit-mode");
     }
 
-    function deleteNote(id) {
+    async function deleteNote(id) {
       if (!confirm("Delete this note?")) return;
+
       const note = notes.find(n => n.id === id);
-      revokeNoteAttachmentUrls(note);
-      notes = notes.filter(n => n.id !== id);
-      renderFeed();
-      renderTrendingSubjects();
+      if (note && note.attachments) {
+        for (const file of note.attachments) {
+          if (file.storagePath) {
+            try { await deleteObject(ref(storage, file.storagePath)); } catch {}
+          }
+        }
+      }
+
+      await deleteDoc(doc(db, "notes", id));
     }
 
-    function handleNotePost(e) {
+    async function handleNotePost(e) {
       e.preventDefault();
 
       const subject = document.getElementById("noteSubjectInput").value.trim();
       const content = document.getElementById("noteContentInput").value.trim();
       const files = Array.from(noteFileInput.files || []);
 
-      const attachments = files.map(file => ({
-        name: file.name,
-        type: file.type || "application/octet-stream",
-        size: file.size,
-        isImage: file.type.startsWith("image/"),
-        url: URL.createObjectURL(file)
-      }));
+      const attachments = files.length ? await uploadAttachments(files) : [];
 
-      const newNote = {
-        id: Date.now(),
+      await addDoc(collection(db, "notes"), {
+        ownerId: uid,
         author: currentUser.name,
         avatar: currentUser.avatar,
         major: currentUser.major,
         subject: subject || "General",
-        date: "Just now",
         content,
         likes: 0,
-        likedByMe: false,
+        likedBy: [],
         comments: [],
-        isOwner: true,
-        attachments
-      };
+        attachments,
+        createdAt: serverTimestamp()
+      });
 
-      notes.unshift(newNote);
-      renderFeed();
-      renderTrendingSubjects();
       closeNoteModal();
     }
 
@@ -1682,14 +1743,6 @@
         major: document.getElementById("profileMajorInput").value.trim() || "Curious Scholar",
         bio: document.getElementById("profileBioInput").value.trim() || "Ready to share wisdom on NoteNest!"
       };
-
-      notes.forEach(note => {
-        if (note.isOwner) {
-          note.author = currentUser.name;
-          note.avatar = currentUser.avatar;
-          note.major = currentUser.major;
-        }
-      });
 
       renderProfile();
       renderFeed();
@@ -1765,6 +1818,27 @@
       alert(`${name}'s full profile would appear here in a complete NoteNest build.`);
     }
 
+    function subscribeNotes() {
+      const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        notes = snap.docs.map(d => {
+          const data = d.data();
+          const likedBy = data.likedBy || [];
+          return {
+            id: d.id,
+            ...data,
+            likes: data.likes || 0,
+            likedByMe: uid ? likedBy.includes(uid) : false,
+            comments: data.comments || [],
+            attachments: data.attachments || [],
+            isOwner: data.ownerId === uid
+          };
+        });
+        renderFeed();
+        renderTrendingSubjects();
+      });
+    }
+
     window.addEventListener("click", (e) => {
       if (e.target === noteModal) closeNoteModal();
       if (e.target === profileModal) closeProfileModal();
@@ -1777,6 +1851,12 @@
         profileMenuOpen = false;
         profileMenu.classList.remove("show");
       }
+    });
+
+    signInAnonymously(auth);
+    onAuthStateChanged(auth, (user) => {
+      uid = user ? user.uid : null;
+      subscribeNotes();
     });
 
     populateEmojiPicker();
