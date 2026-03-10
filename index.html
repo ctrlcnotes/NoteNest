@@ -204,6 +204,7 @@
       background: var(--color-pink-main);
       color: white;
       font-weight: 600;
+      cursor: pointer;
     }
 
     .search-status {
@@ -271,6 +272,7 @@
       font-weight: 600;
       background: var(--color-pink-light);
       color: var(--text-primary);
+      cursor: pointer;
     }
 
     .cta-secondary {
@@ -280,6 +282,7 @@
       font-weight: 600;
       background: transparent;
       color: var(--color-dim-green);
+      cursor: pointer;
     }
 
     .hero-visual {
@@ -323,7 +326,7 @@
     }
 
     .desk-laptop::after {
-      content: "";
+      content: "";
       position: absolute;
       top: 18%;
       left: 50%;
@@ -665,6 +668,7 @@
       padding: 0.5rem 0.9rem;
       font-size: 0.85rem;
       font-weight: 600;
+      cursor: pointer;
     }
 
     .btn-save { background: var(--color-pink-main); color: white; }
@@ -1066,6 +1070,7 @@
       color: white;
       font-weight: 600;
       font-family: inherit;
+      cursor: pointer;
     }
 
     @keyframes fadeUp {
@@ -1246,7 +1251,7 @@
     import {
       getFirestore, collection, addDoc, serverTimestamp,
       query, orderBy, onSnapshot, doc, updateDoc, deleteDoc,
-      increment, arrayUnion, arrayRemove, limit
+      increment, arrayUnion, arrayRemove
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
@@ -1266,8 +1271,536 @@
     const auth = getAuth(app);
 
     let uid = null;
-
     let selectedEmoji = "😊";
     let searchQuery = "";
     let profileMenuOpen = false;
     let tempPreviewUrls = [];
+
+    let currentUser = {
+      name: "New Student",
+      avatar: "😊",
+      major: "Choose your major",
+      bio: "Tap the avatar menu to personalize your nest."
+    };
+
+    let notes = [];
+    let boardComments = [];
+
+    const feedContainer = document.getElementById("feed-container");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileName = document.getElementById("profileName");
+    const profileMajor = document.getElementById("profileMajor");
+    const profileBio = document.getElementById("profileBio");
+    const userAvatarBtn = document.getElementById("userAvatarBtn");
+    const noteModal = document.getElementById("noteModal");
+    const profileModal = document.getElementById("profileModal");
+    const emojiPicker = document.getElementById("emojiPicker");
+    const profileMenu = document.getElementById("profileMenu");
+    const searchPanel = document.getElementById("searchPanel");
+    const searchStatus = document.getElementById("searchStatus");
+    const resultCount = document.getElementById("resultCount");
+    const commentList = document.getElementById("commentList");
+    const trendingContainer = document.getElementById("trendingContainer");
+    const noteFileInput = document.getElementById("noteFileInput");
+    const uploadPreview = document.getElementById("uploadPreview");
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, function(char) {
+        return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[char];
+      });
+    }
+
+    function formatDate(ts) {
+      if (!ts) return "";
+      if (ts.toDate) return ts.toDate().toLocaleString();
+      return new Date(ts).toLocaleString();
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes && bytes !== 0) return "";
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function clearTempPreviewUrls() {
+      tempPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+      tempPreviewUrls = [];
+    }
+
+    function buildAttachmentsHTML(note) {
+      if (!note.attachments || !note.attachments.length) return "";
+      const imageFiles = note.attachments.filter(f => f.isImage);
+      const otherFiles = note.attachments.filter(f => !f.isImage);
+      let html = `<div class="attachments-wrap"><div class="attachments-label">Attachments</div>`;
+      if (imageFiles.length) {
+        html += `<div class="image-grid">`;
+        imageFiles.forEach(file => {
+          html += `<a class="image-card" href="${file.url}" download="${escapeHTML(file.name)}" title="${escapeHTML(file.name)}"><img src="${file.url}" alt="${escapeHTML(file.name)}" /><span>${escapeHTML(file.name)}</span></a>`;
+        });
+        html += `</div>`;
+      }
+      if (otherFiles.length) {
+        html += `<div class="file-list">`;
+        otherFiles.forEach(file => {
+          html += `<a class="file-chip" href="${file.url}" download="${escapeHTML(file.name)}" title="${escapeHTML(file.name)}"><span>📎 ${escapeHTML(file.name)}</span><small>${escapeHTML(formatFileSize(file.size))}</small></a>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }
+
+    function renderFeed() {
+      feedContainer.innerHTML = "";
+      const filtered = notes.filter(note => {
+        if (!searchQuery) return true;
+        const attachmentNames = (note.attachments || []).map(f => f.name).join(" ");
+        const haystack = [note.subject, note.content, note.author, note.major, attachmentNames].join(" ").toLowerCase();
+        return haystack.includes(searchQuery);
+      });
+      resultCount.textContent = `${filtered.length} note${filtered.length !== 1 ? "s" : ""} on the board`;
+      if (filtered.length === 0) {
+        const message = searchQuery
+          ? `No notes match "${escapeHTML(searchQuery)}" yet. Try another keyword or share the first one.`
+          : `This nest is ready for your knowledge. Be the first to share your notes and start the conversation.`;
+        feedContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🪺</div>
+            <h3 style="color:var(--color-pink-main);margin-bottom:0.5rem;">No notes yet!</h3>
+            <p style="max-width:420px;margin:0 auto 1.5rem;">${message}</p>
+            <button class="cta-primary" onclick="openNoteModal()">Share Your First Note ✨</button>
+          </div>`;
+        return;
+      }
+      filtered.forEach(note => {
+        const comments = (note.comments || []).map(c => {
+          const text = typeof c === "string" ? c : c.text;
+          const author = typeof c === "string" ? "Student" : c.author;
+          return `<div style="padding:4px 0;font-size:0.9rem;">💬 ${escapeHTML(author)}: ${escapeHTML(text)}</div>`;
+        }).join("");
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `note-${note.id}`;
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="badge">${escapeHTML(note.subject)}</span>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <small style="color:#999;">${escapeHTML(formatDate(note.createdAt) || "Just now")}</small>
+              ${note.isOwner ? `
+                <div class="card-options">
+                  <button class="options-btn" onclick="toggleOptions('${note.id}')">⋮</button>
+                  <div class="dropdown-menu" id="options-${note.id}">
+                    <button class="dropdown-item" onclick="editNote('${note.id}')">✏️ Edit</button>
+                    <button class="dropdown-item danger" onclick="deleteNote('${note.id}')">🗑️ Delete</button>
+                  </div>
+                </div>` : ""}
+            </div>
+          </div>
+          <div class="author-row" onclick="viewProfile('${escapeHTML(note.author)}')">
+            <div class="avatar">${note.avatar}</div>
+            <div class="author-meta">
+              <h4>${escapeHTML(note.author)}</h4>
+              <span>${escapeHTML(note.major)} • Shared a note</span>
+            </div>
+          </div>
+          <div class="content-text">${escapeHTML(note.content).replace(/\n/g, "<br>")}</div>
+          ${buildAttachmentsHTML(note)}
+          <div class="edit-form">
+            <textarea class="edit-textarea" id="edit-content-${note.id}">${escapeHTML(note.content)}</textarea>
+            <div class="edit-actions">
+              <button class="btn-small btn-save" onclick="saveEdit('${note.id}')">Save</button>
+              <button class="btn-small btn-cancel" onclick="cancelEdit('${note.id}')">Cancel</button>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn ${note.likedByMe ? "liked" : ""}" onclick="toggleLike('${note.id}')">
+              <span class="like-icon">${note.likedByMe ? "❤️" : "🤍"}</span>${note.likes} Likes
+            </button>
+            <button class="action-btn" onclick="toggleComments('${note.id}')">💬 Discuss</button>
+          </div>
+          <div class="comments-wrapper" id="comments-${note.id}">
+            ${comments || `<div style="font-size:0.9rem;color:#888;">No replies yet. Start the conversation!</div>`}
+            <input class="comment-input" placeholder="Write a reply..." onkeypress="if(event.key==='Enter'){submitComment('${note.id}', this)}" />
+          </div>`;
+        feedContainer.appendChild(card);
+      });
+    }
+
+    function renderTrendingSubjects() {
+      trendingContainer.innerHTML = "";
+      if (!notes.length) {
+        trendingContainer.innerHTML = `<div class="empty-state" style="padding:1rem;"><p style="font-size:0.92rem;">No trending subjects yet. Be the first to share!</p></div>`;
+        return;
+      }
+      const counts = {};
+      notes.forEach(n => {
+        const s = (n.subject || "").trim();
+        if (s) counts[s] = (counts[s] || 0) + 1;
+      });
+      const subjects = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 6);
+      if (!subjects.length) {
+        trendingContainer.innerHTML = `<div class="empty-state" style="padding:1rem;"><p style="font-size:0.92rem;">No trending subjects yet. Be the first to share!</p></div>`;
+        return;
+      }
+      subjects.forEach(([subject, count]) => {
+        const item = document.createElement("div");
+        item.className = "trend-item";
+        item.innerHTML = `<span>${escapeHTML(subject)}</span><span class="trend-count">${count}</span>`;
+        trendingContainer.appendChild(item);
+      });
+    }
+
+    function renderProfile() {
+      profileAvatar.textContent = currentUser.avatar;
+      profileName.textContent = currentUser.name;
+      profileMajor.textContent = currentUser.major;
+      profileBio.textContent = currentUser.bio;
+      userAvatarBtn.textContent = currentUser.avatar;
+    }
+
+    function populateEmojiPicker() {
+      const emojis = ["😊","👩‍🎓","👨‍🎓","🤓","😎","🌟","🎨","📚","⚗️","🏛️","🎭","🎵"];
+      emojiPicker.innerHTML = "";
+      emojis.forEach(emoji => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `emoji-option ${emoji === selectedEmoji ? "selected" : ""}`;
+        btn.textContent = emoji;
+        btn.onclick = (e) => {
+          selectedEmoji = emoji;
+          document.querySelectorAll(".emoji-option").forEach(b => b.classList.remove("selected"));
+          e.currentTarget.classList.add("selected");
+        };
+        emojiPicker.appendChild(btn);
+      });
+    }
+
+    function renderComments() {
+      commentList.innerHTML = "";
+      if (!boardComments.length) {
+        commentList.innerHTML = `
+          <div class="empty-state" style="padding:2rem;">
+            <div class="empty-state-icon">💬</div>
+            <p>No comments yet. Be the first to leave a shout-out!</p>
+          </div>`;
+        return;
+      }
+      boardComments.forEach(comment => {
+        const card = document.createElement("div");
+        card.className = "comment-card";
+        card.innerHTML = `
+          <h4>${escapeHTML(comment.name || "Anonymous Owl")}</h4>
+          <p>${escapeHTML(comment.message)}</p>
+          <small>${escapeHTML(formatDate(comment.createdAt) || "")}</small>`;
+        commentList.appendChild(card);
+      });
+    }
+
+    function previewSelectedFiles() {
+      clearTempPreviewUrls();
+      const files = Array.from(noteFileInput.files || []);
+      if (!files.length) {
+        uploadPreview.className = "upload-preview empty";
+        uploadPreview.innerHTML = "No files selected yet. You can add images, PDFs, slides, or other study files.";
+        return;
+      }
+      uploadPreview.className = "upload-preview";
+      let html = `<div class="upload-grid">`;
+      files.forEach(file => {
+        const isImage = file.type.startsWith("image/");
+        if (isImage) {
+          const url = URL.createObjectURL(file);
+          tempPreviewUrls.push(url);
+          html += `
+            <div class="upload-item">
+              <img class="upload-thumb" src="${url}" alt="${escapeHTML(file.name)}" />
+              <div class="upload-name">${escapeHTML(file.name)}</div>
+              <div class="upload-size">${escapeHTML(formatFileSize(file.size))}</div>
+            </div>`;
+        } else {
+          html += `
+            <div class="upload-item">
+              <div class="upload-file-icon">📄</div>
+              <div class="upload-name">${escapeHTML(file.name)}</div>
+              <div class="upload-size">${escapeHTML(formatFileSize(file.size))}</div>
+            </div>`;
+        }
+      });
+      html += `</div>`;
+      uploadPreview.innerHTML = html;
+    }
+
+    function resetNoteComposer() {
+      document.getElementById("noteForm").reset();
+      clearTempPreviewUrls();
+      uploadPreview.className = "upload-preview empty";
+      uploadPreview.innerHTML = "No files selected yet. You can add images, PDFs, slides, or other study files.";
+    }
+
+    async function uploadAttachments(files) {
+      return Promise.all(files.map(async (file) => {
+        const path = `notes/${uid}/${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        return {
+          name: file.name,
+          type: file.type || "application/octet-stream",
+          size: file.size,
+          isImage: file.type.startsWith("image/"),
+          url,
+          storagePath: path
+        };
+      }));
+    }
+
+    async function toggleLike(id) {
+      const note = notes.find(n => n.id === id);
+      if (!note || !uid) return;
+      const refDoc = doc(db, "notes", id);
+      if (note.likedByMe) {
+        await updateDoc(refDoc, { likes: increment(-1), likedBy: arrayRemove(uid) });
+      } else {
+        await updateDoc(refDoc, { likes: increment(1), likedBy: arrayUnion(uid) });
+      }
+    }
+
+    function toggleComments(id) {
+      const wrapper = document.getElementById(`comments-${id}`);
+      if (wrapper) wrapper.classList.toggle("open");
+    }
+
+    async function submitComment(id, input) {
+      const text = input.value.trim();
+      if (!text) return;
+      const comment = {
+        text,
+        author: currentUser.name,
+        avatar: currentUser.avatar,
+        createdAt: new Date().toISOString()
+      };
+      await updateDoc(doc(db, "notes", id), { comments: arrayUnion(comment) });
+      input.value = "";
+    }
+
+    function toggleOptions(id) {
+      document.querySelectorAll(".dropdown-menu").forEach(m => m.classList.remove("show"));
+      const menu = document.getElementById(`options-${id}`);
+      if (menu) menu.classList.add("show");
+    }
+
+    function editNote(id) {
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) noteEl.classList.add("edit-mode");
+      document.querySelectorAll(".dropdown-menu").forEach(m => m.classList.remove("show"));
+    }
+
+    async function saveEdit(id) {
+      const textarea = document.getElementById(`edit-content-${id}`);
+      if (!textarea) return;
+      await updateDoc(doc(db, "notes", id), { content: textarea.value.trim() });
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) noteEl.classList.remove("edit-mode");
+    }
+
+    function cancelEdit(id) {
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) noteEl.classList.remove("edit-mode");
+    }
+
+    async function deleteNote(id) {
+      if (!confirm("Delete this note?")) return;
+      const note = notes.find(n => n.id === id);
+      if (note && note.attachments) {
+        for (const file of note.attachments) {
+          if (file.storagePath) {
+            try { await deleteObject(ref(storage, file.storagePath)); } catch {}
+          }
+        }
+      }
+      await deleteDoc(doc(db, "notes", id));
+    }
+
+    async function handleNotePost(e) {
+      e.preventDefault();
+      const subject = document.getElementById("noteSubjectInput").value.trim();
+      const content = document.getElementById("noteContentInput").value.trim();
+      const files = Array.from(noteFileInput.files || []);
+      const attachments = files.length ? await uploadAttachments(files) : [];
+      await addDoc(collection(db, "notes"), {
+        ownerId: uid,
+        author: currentUser.name,
+        avatar: currentUser.avatar,
+        major: currentUser.major,
+        subject: subject || "General",
+        content,
+        likes: 0,
+        likedBy: [],
+        comments: [],
+        attachments,
+        createdAt: serverTimestamp()
+      });
+      closeNoteModal();
+    }
+
+    function handleProfileUpdate(e) {
+      e.preventDefault();
+      currentUser = {
+        name: document.getElementById("profileNameInput").value.trim() || "Anonymous Owl",
+        avatar: selectedEmoji,
+        major: document.getElementById("profileMajorInput").value.trim() || "Curious Scholar",
+        bio: document.getElementById("profileBioInput").value.trim() || "Ready to share wisdom on NoteNest!"
+      };
+      renderProfile();
+      renderFeed();
+      closeProfileModal();
+      document.getElementById("profileForm").reset();
+    }
+
+    async function handleCommentPost(e) {
+      e.preventDefault();
+      const name = document.getElementById("commentName").value.trim();
+      const message = document.getElementById("commentMessage").value.trim();
+      if (!message) return;
+      await addDoc(collection(db, "shoutouts"), {
+        name: name || "Anonymous Owl",
+        message,
+        createdAt: serverTimestamp()
+      });
+      e.target.reset();
+    }
+
+    function subscribeShoutouts() {
+      const q = query(collection(db, "shoutouts"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        boardComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderComments();
+      });
+    }
+
+    function openNoteModal() {
+      noteModal.classList.add("visible");
+    }
+
+    function closeNoteModal() {
+      noteModal.classList.remove("visible");
+      resetNoteComposer();
+    }
+
+    function openProfileModal() {
+      populateEmojiPicker();
+      document.getElementById("profileNameInput").value = currentUser.name === "New Student" ? "" : currentUser.name;
+      document.getElementById("profileMajorInput").value = currentUser.major.includes("Choose") ? "" : currentUser.major;
+      document.getElementById("profileBioInput").value = currentUser.bio.includes("Tap") ? "" : currentUser.bio;
+      profileModal.classList.add("visible");
+    }
+
+    function closeProfileModal() {
+      profileModal.classList.remove("visible");
+    }
+
+    function toggleProfileMenu() {
+      profileMenuOpen = !profileMenuOpen;
+      profileMenu.classList.toggle("show", profileMenuOpen);
+    }
+
+    function toggleSearchPanel() {
+      searchPanel.classList.toggle("show");
+      if (searchPanel.classList.contains("show")) {
+        document.getElementById("searchInput").focus();
+      }
+    }
+
+    function handleSearchInput(event) {
+      searchQuery = event.target.value.trim().toLowerCase();
+      searchStatus.textContent = searchQuery
+        ? `Showing notes matching "${searchQuery}"`
+        : "Browsing all shared notes.";
+      renderFeed();
+    }
+
+    function clearSearch() {
+      document.getElementById("searchInput").value = "";
+      searchQuery = "";
+      searchStatus.textContent = "Browsing all shared notes.";
+      renderFeed();
+    }
+
+    function viewProfile(name) {
+      alert(`${name}'s full profile would appear here in a complete NoteNest build.`);
+    }
+
+    function subscribeNotes() {
+      const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        notes = snap.docs.map(d => {
+          const data = d.data();
+          const likedBy = data.likedBy || [];
+          return {
+            id: d.id,
+            ...data,
+            likes: data.likes || 0,
+            likedByMe: uid ? likedBy.includes(uid) : false,
+            comments: data.comments || [],
+            attachments: data.attachments || [],
+            isOwner: data.ownerId === uid
+          };
+        });
+        renderFeed();
+        renderTrendingSubjects();
+      });
+    }
+
+    /* ── Expose all inline-handler functions to global scope ── */
+    window.openNoteModal = openNoteModal;
+    window.closeNoteModal = closeNoteModal;
+    window.openProfileModal = openProfileModal;
+    window.closeProfileModal = closeProfileModal;
+    window.toggleProfileMenu = toggleProfileMenu;
+    window.toggleSearchPanel = toggleSearchPanel;
+    window.handleSearchInput = handleSearchInput;
+    window.clearSearch = clearSearch;
+    window.handleNotePost = handleNotePost;
+    window.handleProfileUpdate = handleProfileUpdate;
+    window.handleCommentPost = handleCommentPost;
+    window.previewSelectedFiles = previewSelectedFiles;
+    window.toggleLike = toggleLike;
+    window.toggleComments = toggleComments;
+    window.submitComment = submitComment;
+    window.toggleOptions = toggleOptions;
+    window.editNote = editNote;
+    window.saveEdit = saveEdit;
+    window.cancelEdit = cancelEdit;
+    window.deleteNote = deleteNote;
+    window.viewProfile = viewProfile;
+
+    /* ── Close menus / modals on outside click ── */
+    window.addEventListener("click", (e) => {
+      if (e.target === noteModal) closeNoteModal();
+      if (e.target === profileModal) closeProfileModal();
+      if (!e.target.closest(".card-options")) {
+        document.querySelectorAll(".dropdown-menu").forEach(m => m.classList.remove("show"));
+      }
+      if (!e.target.closest("#userAvatarBtn") && !e.target.closest(".profile-menu")) {
+        profileMenuOpen = false;
+        profileMenu.classList.remove("show");
+      }
+    });
+
+    /* ── Auth + bootstrap ── */
+    signInAnonymously(auth);
+    onAuthStateChanged(auth, (user) => {
+      uid = user ? user.uid : null;
+      subscribeNotes();
+      subscribeShoutouts();
+    });
+
+    populateEmojiPicker();
+    renderFeed();
+    renderTrendingSubjects();
+    renderProfile();
+    renderComments();
+  </script>
+</body>
+</html>
