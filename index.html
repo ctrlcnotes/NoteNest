@@ -49,20 +49,14 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ─── Header ─── */
     header {
       background: var(--bg-card);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
       border-bottom: 4px solid var(--color-pastel-green);
       box-shadow: 0 2px 12px rgba(0,0,0,0.05);
       padding: 1rem 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 1rem; flex-wrap: wrap;
       transition: background 0.3s, border-color 0.3s;
     }
 
@@ -71,11 +65,8 @@
       display: flex; gap: 10px; align-items: center;
     }
 
-    .header-actions {
-      display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;
-    }
+    .header-actions { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; }
 
-    /* ─── Buttons ─── */
     .btn, .btn-link, .icon-btn, .user-profile-btn, .btn-small {
       cursor: pointer;
       transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
@@ -124,7 +115,6 @@
     .btn-save { background: var(--color-pink-main); color: white; }
     .btn-cancel { background: var(--border-light); color: var(--text-secondary); }
 
-    /* ─── Profile Menu ─── */
     .profile-menu {
       position: fixed; top: 74px; right: 1.2rem; background: var(--bg-card);
       border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -143,7 +133,6 @@
 
     .profile-menu button:hover { background: rgba(237,158,160,0.12); }
 
-    /* ─── Search ─── */
     .search-panel {
       position: sticky; top: 76px; z-index: 90;
       background: var(--bg-card); border-bottom: 1px solid var(--border-light);
@@ -173,10 +162,8 @@
 
     .search-status { margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); }
 
-    /* ─── Main ─── */
     main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
 
-    /* ─── Hero ─── */
     .hero-section {
       background: linear-gradient(135deg, var(--bg-card), var(--color-accent-1));
       border-radius: var(--radius-lg); padding: 2rem;
@@ -260,7 +247,6 @@
     body.dark-mode .desk-headphones::before,body.dark-mode .desk-headphones::after { background:#a06070; }
     body.dark-mode .desk-earbuds::before,body.dark-mode .desk-earbuds::after { background:#888; }
 
-    /* ─── About ─── */
     .about-section { margin-bottom: 3rem; }
     .about-section h2 { font-size: 2rem; color: var(--color-pink-main); margin-bottom: 1rem; }
     .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
@@ -271,11 +257,9 @@
     .about-card h4 { color: var(--color-dim-green); margin-bottom: 0.4rem; }
     .about-card p { color: var(--text-secondary); line-height: 1.6; }
 
-    /* ─── App Grid ─── */
     .app-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
     @media (min-width: 900px) { .app-grid { grid-template-columns: 2fr 1fr; } }
 
-    /* ─── Feed Controls ─── */
     .feed-controls { display: flex; gap: 10px; margin-bottom: 0.5rem; flex-wrap: wrap; }
 
     .filter-pill {
@@ -296,7 +280,6 @@
     .feed-status { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; }
     .note-list { display: flex; flex-direction: column; gap: 1.5rem; }
 
-    /* ─── Card ─── */
     .card {
       background: var(--bg-card); border-radius: var(--radius-lg); padding: 1.5rem;
       border-left: 6px solid var(--color-dim-green); box-shadow: var(--shadow-subtle);
@@ -338,7 +321,6 @@
     body.dark-mode .dropdown-item:hover { background: rgba(255,255,255,0.06); }
     body.dark-mode .dropdown-item.danger:hover { background: #3a1a1a; color: #ff6b6b; }
 
-    /* ─── Author ─── */
     .author-row { display: flex; gap: 10px; align-items: center; margin: 1rem 0; cursor: pointer; }
 
     .avatar {
@@ -351,7 +333,6 @@
 
     .content-text { line-height: 1.7; color: var(--text-secondary); margin-bottom: 1rem; }
 
-    /* ─── Note Edit ─── */
     .edit-form { display: none; }
     .card.edit-mode .content-text, .card.edit-mode .attachments-wrap { display: none; }
     .card.edit-mode .edit-form { display: block; }
@@ -365,7 +346,6 @@
 
     .edit-actions { margin-top: 0.7rem; display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* ─── Actions ─── */
     .action-btn {
       border: none; background: transparent; display: flex; align-items: center;
       gap: 6px; cursor: pointer; color: var(--text-secondary); font-weight: 600;
@@ -374,7 +354,6 @@
 
     .liked .like-icon { color: var(--color-pink-main); }
 
-    /* ─── Comments Wrapper ─── */
     .comments-wrapper {
       display: none; background: var(--bg-comment); border-radius: 12px;
       padding: 1rem; margin-top: 0.8rem; transition: background 0.3s;
@@ -389,7 +368,6 @@
       color: var(--text-primary); transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
 
-    /* ─── Individual comment items ─── */
     .cmt-item {
       padding: 8px 0; font-size: 0.9rem;
       border-bottom: 1px solid rgba(0,0,0,0.04);
@@ -438,7 +416,6 @@
     .cmt-save-btn { background: var(--color-pink-main); color: white; }
     .cmt-cancel-btn { background: var(--border-light); color: var(--text-secondary); }
 
-    /* ─── Attachments ─── */
     .attachments-wrap { margin-bottom: 1rem; }
 
     .attachments-label {
@@ -475,7 +452,6 @@
     .file-chip span { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; }
     .file-chip small { color: var(--text-secondary); font-size: 0.78rem; }
 
-    /* ─── Aside ─── */
     aside {
       background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-lg);
       box-shadow: var(--shadow-subtle); height: fit-content; transition: background 0.3s;
@@ -503,11 +479,9 @@
 
     .trend-count { font-weight: 700; color: var(--color-pink-main); flex-shrink: 0; }
 
-    /* ─── Empty State ─── */
     .empty-state { text-align: center; padding: 3.2rem 1.2rem; color: var(--text-secondary); }
     .empty-state-icon { font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.6; }
 
-    /* ─── Modal ─── */
     .modal-overlay {
       position: fixed; inset: 0;
       background: rgba(255,255,255,0.9); backdrop-filter: blur(6px);
@@ -591,7 +565,27 @@
     .upload-size { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem; }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
 
-    /* ─── Community Shout-outs ─── */
+    .upload-progress {
+      margin-top: 1rem; padding: 1rem; background: var(--bg-comment);
+      border-radius: var(--radius-md); display: none; text-align: center;
+    }
+
+    .upload-progress.active { display: block; }
+
+    .progress-bar-wrap {
+      width: 100%; height: 8px; background: var(--border-light);
+      border-radius: 99px; overflow: hidden; margin-top: 0.5rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%; background: var(--color-pink-main);
+      border-radius: 99px; width: 0%; transition: width 0.3s;
+    }
+
+    .upload-status-text {
+      font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.4rem;
+    }
+
     .community-comments {
       margin-top: 3rem; background: var(--bg-card); padding: 2rem;
       border-radius: var(--radius-lg); box-shadow: var(--shadow-subtle);
@@ -640,14 +634,12 @@
       color: white; font-weight: 600; font-family: inherit; cursor: pointer;
     }
 
-    /* ─── Animations ─── */
     @keyframes fadeUp { from { opacity:0;transform:translateY(26px); } to { opacity:1;transform:translateY(0); } }
     @keyframes expand { from { opacity:0;transform:translateY(-6px); } to { opacity:1;transform:translateY(0); } }
   </style>
 </head>
 <body>
 
-  <!-- ═══════ HEADER ═══════ -->
   <header>
     <div class="brand"><span style="font-size:2rem;">🪺</span>NoteNest</div>
     <div class="header-actions">
@@ -663,7 +655,6 @@
     <button onclick="openNoteModal()">📝 Share a Note</button>
   </div>
 
-  <!-- ═══════ SEARCH ═══════ -->
   <div class="search-panel" id="searchPanel">
     <form onsubmit="event.preventDefault();">
       <input id="searchInput" class="search-input" type="text" placeholder="Search subjects, authors, keywords…" oninput="handleSearchInput(event)" />
@@ -673,8 +664,6 @@
   </div>
 
   <main>
-
-    <!-- ═══════ HERO ═══════ -->
     <section class="hero-section" id="home">
       <div class="hero-content">
         <h1>NoteNest is your cozy campus for collaborative studying.</h1>
@@ -691,7 +680,6 @@
       </div>
     </section>
 
-    <!-- ═══════ ABOUT ═══════ -->
     <section class="about-section" id="about">
       <h2>About NoteNest</h2>
       <div class="about-grid">
@@ -701,7 +689,6 @@
       </div>
     </section>
 
-    <!-- ═══════ FEED ═══════ -->
     <div class="app-grid" id="feedSection">
       <section>
         <div class="feed-controls" id="filterPills">
@@ -725,7 +712,6 @@
       </aside>
     </div>
 
-    <!-- ═══════ SHOUT-OUTS ═══════ -->
     <section class="community-comments" id="community">
       <h2>Leave a NoteNest Shout-out</h2>
       <p>Have feedback, gratitude, or a study mantra? Drop it below so the community can feel the love.</p>
@@ -738,7 +724,7 @@
     </section>
   </main>
 
-  <!-- ═══════ NOTE MODAL ═══════ -->
+  <!-- NOTE MODAL -->
   <div class="modal-overlay" id="noteModal">
     <div class="modal-box">
       <h2 style="color:var(--color-pink-main);margin-bottom:1rem;">Share New Notes</h2>
@@ -746,15 +732,20 @@
         <div class="form-group"><label class="form-label">Subject</label><input class="form-control" id="noteSubjectInput" placeholder="e.g., Microbiology" required /></div>
         <div class="form-group"><label class="form-label">Summary / Key Takeaways</label><textarea class="form-control" id="noteContentInput" rows="5" placeholder="Bullet points, mnemonics, diagrams…" required></textarea></div>
         <div class="form-group"><label class="form-label">Add files or images</label><input class="form-control" id="noteFileInput" type="file" multiple onchange="previewSelectedFiles()" /><div class="upload-preview empty" id="uploadPreview">No files selected yet.</div></div>
+        <div class="upload-progress" id="uploadProgress">
+          <div style="font-weight:600;color:var(--color-pink-main);">Uploading files…</div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+          <div class="upload-status-text" id="uploadStatusText">0 of 0 files uploaded</div>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Publish ✨</button>
+          <button type="submit" class="btn btn-primary" id="publishBtn">Publish ✨</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ═══════ PROFILE MODAL ═══════ -->
+  <!-- PROFILE MODAL -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-box">
       <h2 style="color:var(--color-pink-main);margin-bottom:1rem;">Set Up Your Profile</h2>
@@ -771,7 +762,6 @@
     </div>
   </div>
 
-  <!-- ═══════ SCRIPT ═══════ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import {
@@ -780,7 +770,6 @@
       increment, arrayUnion, arrayRemove, setDoc, getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCoJxk2B5T3NAmXLSuEV7bFh4aqqnPW16c",
@@ -793,8 +782,12 @@
 
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
-    const storage = getStorage(app);
     const auth = getAuth(app);
+
+    /* ══════ CLOUDINARY CONFIG ══════ */
+    const CLOUD_NAME     = "dmlgrubvj";
+    const UPLOAD_PRESET  = "notenest_uploads";
+    const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
 
     /* ────── state ────── */
     let uid = null;
@@ -805,6 +798,7 @@
     let tempPreviewUrls = [];
     let notes = [];
     let shouts = [];
+    let isUploading = false;
 
     let currentUser = {
       name: "New Student", avatar: "😊",
@@ -832,8 +826,12 @@
     const noteFileInput   = $("noteFileInput");
     const uploadPreview   = $("uploadPreview");
     const darkModeBtn     = $("darkModeBtn");
+    const uploadProgress  = $("uploadProgress");
+    const progressBarFill = $("progressBarFill");
+    const uploadStatusText= $("uploadStatusText");
+    const publishBtn      = $("publishBtn");
 
-    /* ═══════════ HELPERS ═══════════ */
+    /* ═══════ HELPERS ═══════ */
     const esc = s => String(s).replace(/[&<>"']/g, c =>
       ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 
@@ -855,7 +853,7 @@
       tempPreviewUrls = [];
     }
 
-    /* ═══════════ DARK MODE ═══════════ */
+    /* ═══════ DARK MODE ═══════ */
     function toggleDarkMode() {
       const on = document.body.classList.toggle("dark-mode");
       try { localStorage.setItem("nn-dark", on ? "1" : "0"); } catch {}
@@ -869,7 +867,7 @@
       }
     } catch {}
 
-    /* ═══════════ FILTER PILLS ═══════════ */
+    /* ═══════ FILTER PILLS ═══════ */
     function setFilter(f, el) {
       activeFilter = f;
       document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
@@ -877,60 +875,112 @@
       renderFeed();
     }
 
-    /* ═══════════ ATTACHMENTS HTML ═══════════ */
+    /* ═══════ CLOUDINARY UPLOAD ═══════ */
+    async function uploadToCloudinary(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET);
+      formData.append("folder", "notenest");
+
+      const res = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error("Upload failed: " + err);
+      }
+      return res.json();
+    }
+
+    async function uploadFiles(files) {
+      const results = [];
+      uploadProgress.classList.add("active");
+      publishBtn.disabled = true;
+      publishBtn.textContent = "Uploading…";
+      isUploading = true;
+
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        uploadStatusText.textContent = "Uploading " + (i + 1) + " of " + files.length + ": " + f.name;
+        progressBarFill.style.width = ((i) / files.length * 100) + "%";
+
+        try {
+          const data = await uploadToCloudinary(f);
+          const isImage = f.type.startsWith("image/");
+          results.push({
+            name: f.name,
+            type: f.type || "application/octet-stream",
+            size: f.size,
+            isImage,
+            url: data.secure_url,
+            publicId: data.public_id
+          });
+        } catch (err) {
+          console.error("Failed to upload " + f.name + ":", err);
+          alert('Failed to upload "' + f.name + '". Skipping this file.');
+        }
+
+        progressBarFill.style.width = ((i + 1) / files.length * 100) + "%";
+      }
+
+      uploadStatusText.textContent = "Done! " + results.length + " file(s) uploaded.";
+      isUploading = false;
+      publishBtn.disabled = false;
+      publishBtn.textContent = "Publish ✨";
+
+      return results;
+    }
+
+    /* ═══════ ATTACHMENTS HTML ═══════ */
     function attachHTML(note) {
       const a = note.attachments;
       if (!a || !a.length) return "";
       const imgs = a.filter(f => f.isImage), files = a.filter(f => !f.isImage);
-      let h = `<div class="attachments-wrap"><div class="attachments-label">Attachments</div>`;
+      let h = '<div class="attachments-wrap"><div class="attachments-label">Attachments</div>';
       if (imgs.length) {
-        h += `<div class="image-grid">`;
+        h += '<div class="image-grid">';
         imgs.forEach(f => {
-          h += `<a class="image-card" href="${f.url}" download="${esc(f.name)}"><img src="${f.url}" alt="${esc(f.name)}"/><span>${esc(f.name)}</span></a>`;
+          h += '<a class="image-card" href="' + f.url + '" target="_blank" rel="noopener"><img src="' + f.url + '" alt="' + esc(f.name) + '"/><span>' + esc(f.name) + '</span></a>';
         });
-        h += `</div>`;
+        h += '</div>';
       }
       if (files.length) {
-        h += `<div class="file-list">`;
+        h += '<div class="file-list">';
         files.forEach(f => {
-          h += `<a class="file-chip" href="${f.url}" download="${esc(f.name)}"><span>📎 ${esc(f.name)}</span><small>${esc(fmtSize(f.size))}</small></a>`;
+          h += '<a class="file-chip" href="' + f.url + '" target="_blank" rel="noopener"><span>📎 ' + esc(f.name) + '</span><small>' + esc(fmtSize(f.size)) + '</small></a>';
         });
-        h += `</div>`;
+        h += '</div>';
       }
-      return h + `</div>`;
+      return h + '</div>';
     }
 
-    /* ═══════════ BUILD COMMENTS HTML ═══════════ */
+    /* ═══════ BUILD COMMENTS HTML ═══════ */
     function cmtHTML(note) {
       const c = note.comments || [];
-      if (!c.length) return `<div style="font-size:0.9rem;color:var(--text-secondary);">No replies yet — start the conversation!</div>`;
+      if (!c.length) return '<div style="font-size:0.9rem;color:var(--text-secondary);">No replies yet — start the conversation!</div>';
       return c.map((cm, i) => {
         const txt    = typeof cm === "string" ? cm : cm.text;
         const author = typeof cm === "string" ? "Student" : cm.author;
         const mine   = cm.uid && cm.uid === uid;
         const nid    = note.id;
-        return `
-        <div class="cmt-item" id="ci-${nid}-${i}">
-          <div class="cmt-header">
-            <div class="cmt-body" id="ct-${nid}-${i}">
-              💬 <strong>${esc(author)}</strong> ${esc(txt)}
-            </div>
-            ${mine ? `
-            <div class="cmt-actions-row">
-              <button class="cmt-btn" onclick="startEditCmt('${nid}',${i})" title="Edit">✏️</button>
-              <button class="cmt-btn danger" onclick="deleteCmt('${nid}',${i})" title="Delete">✕</button>
-            </div>` : ""}
-          </div>
-          <div class="cmt-edit-area" id="ce-${nid}-${i}">
-            <input class="cmt-edit-field" id="cf-${nid}-${i}" value="${esc(txt)}"/>
-            <button class="cmt-edit-btn cmt-save-btn" onclick="saveCmt('${nid}',${i})">Save</button>
-            <button class="cmt-edit-btn cmt-cancel-btn" onclick="cancelCmt('${nid}',${i})">Cancel</button>
-          </div>
-        </div>`;
+        return '<div class="cmt-item" id="ci-' + nid + '-' + i + '">' +
+          '<div class="cmt-header">' +
+            '<div class="cmt-body" id="ct-' + nid + '-' + i + '">' +
+              '💬 <strong>' + esc(author) + '</strong> ' + esc(txt) +
+            '</div>' +
+            (mine ? '<div class="cmt-actions-row">' +
+              '<button class="cmt-btn" onclick="startEditCmt(\'' + nid + '\',' + i + ')" title="Edit">✏️</button>' +
+              '<button class="cmt-btn danger" onclick="deleteCmt(\'' + nid + '\',' + i + ')" title="Delete">✕</button>' +
+            '</div>' : '') +
+          '</div>' +
+          '<div class="cmt-edit-area" id="ce-' + nid + '-' + i + '">' +
+            '<input class="cmt-edit-field" id="cf-' + nid + '-' + i + '" value="' + esc(txt) + '"/>' +
+            '<button class="cmt-edit-btn cmt-save-btn" onclick="saveCmt(\'' + nid + '\',' + i + ')">Save</button>' +
+            '<button class="cmt-edit-btn cmt-cancel-btn" onclick="cancelCmt(\'' + nid + '\',' + i + ')">Cancel</button>' +
+          '</div>' +
+        '</div>';
       }).join("");
     }
 
-    /* ═══════════ RENDER FEED ═══════════ */
+    /* ═══════ RENDER FEED ═══════ */
     function renderFeed() {
       feedContainer.innerHTML = "";
 
@@ -951,96 +1001,95 @@
         });
       }
 
-      resultCount.textContent = `${list.length} note${list.length !== 1 ? "s" : ""} on the board`;
+      resultCount.textContent = list.length + " note" + (list.length !== 1 ? "s" : "") + " on the board";
 
       if (!list.length) {
         const msg = searchQuery
-          ? `No notes match "${esc(searchQuery)}". Try a different keyword.`
-          : `This nest is ready for your knowledge. Be the first to share!`;
-        feedContainer.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">🪺</div>
-            <h3 style="color:var(--color-pink-main);margin-bottom:0.5rem;">No notes yet!</h3>
-            <p style="max-width:420px;margin:0 auto 1.5rem;">${msg}</p>
-            <button class="cta-primary" onclick="openNoteModal()">Share Your First Note ✨</button>
-          </div>`;
+          ? 'No notes match "' + esc(searchQuery) + '". Try a different keyword.'
+          : "This nest is ready for your knowledge. Be the first to share!";
+        feedContainer.innerHTML =
+          '<div class="empty-state">' +
+            '<div class="empty-state-icon">🪺</div>' +
+            '<h3 style="color:var(--color-pink-main);margin-bottom:0.5rem;">No notes yet!</h3>' +
+            '<p style="max-width:420px;margin:0 auto 1.5rem;">' + msg + '</p>' +
+            '<button class="cta-primary" onclick="openNoteModal()">Share Your First Note ✨</button>' +
+          '</div>';
         return;
       }
 
       list.forEach(note => {
         const el = document.createElement("div");
         el.className = "card";
-        el.id = `note-${note.id}`;
-        el.innerHTML = `
-          <div class="card-header">
-            <span class="badge">${esc(note.subject)}</span>
-            <div style="display:flex;gap:10px;align-items:center;">
-              <small style="color:var(--text-secondary)">${esc(fmtDate(note.createdAt)||"Just now")}</small>
-              ${note.isOwner ? `
-              <div class="card-options">
-                <button class="options-btn" onclick="toggleOptions('${note.id}')">⋮</button>
-                <div class="dropdown-menu" id="options-${note.id}">
-                  <button class="dropdown-item" onclick="editNote('${note.id}')">✏️ Edit</button>
-                  <button class="dropdown-item danger" onclick="deleteNote('${note.id}')">🗑️ Delete</button>
-                </div>
-              </div>` : ""}
-            </div>
-          </div>
+        el.id = "note-" + note.id;
+        el.innerHTML =
+          '<div class="card-header">' +
+            '<span class="badge">' + esc(note.subject) + '</span>' +
+            '<div style="display:flex;gap:10px;align-items:center;">' +
+              '<small style="color:var(--text-secondary)">' + esc(fmtDate(note.createdAt) || "Just now") + '</small>' +
+              (note.isOwner ?
+              '<div class="card-options">' +
+                '<button class="options-btn" onclick="toggleOptions(\'' + note.id + '\')">⋮</button>' +
+                '<div class="dropdown-menu" id="options-' + note.id + '">' +
+                  '<button class="dropdown-item" onclick="editNote(\'' + note.id + '\')">✏️ Edit</button>' +
+                  '<button class="dropdown-item danger" onclick="deleteNote(\'' + note.id + '\')">🗑️ Delete</button>' +
+                '</div>' +
+              '</div>' : '') +
+            '</div>' +
+          '</div>' +
 
-          <div class="author-row" onclick="viewProfile('${esc(note.author)}')">
-            <div class="avatar">${note.avatar}</div>
-            <div class="author-meta"><h4>${esc(note.author)}</h4><span>${esc(note.major)} • Shared a note</span></div>
-          </div>
+          '<div class="author-row" onclick="viewProfile(\'' + esc(note.author) + '\')">' +
+            '<div class="avatar">' + note.avatar + '</div>' +
+            '<div class="author-meta"><h4>' + esc(note.author) + '</h4><span>' + esc(note.major) + ' • Shared a note</span></div>' +
+          '</div>' +
 
-          <div class="content-text">${esc(note.content).replace(/\n/g,"<br>")}</div>
-          ${attachHTML(note)}
+          '<div class="content-text">' + esc(note.content).replace(/\n/g, "<br>") + '</div>' +
+          attachHTML(note) +
 
-          <div class="edit-form">
-            <textarea class="edit-textarea" id="edit-content-${note.id}">${esc(note.content)}</textarea>
-            <div class="edit-actions">
-              <button class="btn-small btn-save" onclick="saveEdit('${note.id}')">Save</button>
-              <button class="btn-small btn-cancel" onclick="cancelEdit('${note.id}')">Cancel</button>
-            </div>
-          </div>
+          '<div class="edit-form">' +
+            '<textarea class="edit-textarea" id="edit-content-' + note.id + '">' + esc(note.content) + '</textarea>' +
+            '<div class="edit-actions">' +
+              '<button class="btn-small btn-save" onclick="saveEdit(\'' + note.id + '\')">Save</button>' +
+              '<button class="btn-small btn-cancel" onclick="cancelEdit(\'' + note.id + '\')">Cancel</button>' +
+            '</div>' +
+          '</div>' +
 
-          <div class="card-actions">
-            <button class="action-btn ${note.likedByMe?"liked":""}" onclick="toggleLike('${note.id}')">
-              <span class="like-icon">${note.likedByMe?"❤️":"🤍"}</span>${note.likes} Likes
-            </button>
-            <button class="action-btn" onclick="toggleComments('${note.id}')">💬 Discuss</button>
-          </div>
+          '<div class="card-actions">' +
+            '<button class="action-btn ' + (note.likedByMe ? "liked" : "") + '" onclick="toggleLike(\'' + note.id + '\')">' +
+              '<span class="like-icon">' + (note.likedByMe ? "❤️" : "🤍") + '</span>' + note.likes + ' Likes' +
+            '</button>' +
+            '<button class="action-btn" onclick="toggleComments(\'' + note.id + '\')">💬 Discuss</button>' +
+          '</div>' +
 
-          <div class="comments-wrapper" id="comments-${note.id}">
-            ${cmtHTML(note)}
-            <input class="comment-input" placeholder="Write a reply…"
-              onkeypress="if(event.key==='Enter'){addComment('${note.id}',this)}"/>
-          </div>`;
+          '<div class="comments-wrapper" id="comments-' + note.id + '">' +
+            cmtHTML(note) +
+            '<input class="comment-input" placeholder="Write a reply…" onkeypress="if(event.key===\'Enter\'){addComment(\'' + note.id + '\',this)}"/>' +
+          '</div>';
         feedContainer.appendChild(el);
       });
     }
 
-    /* ═══════════ COMMENT EDIT / DELETE ═══════════ */
+    /* ═══════ COMMENT EDIT / DELETE ═══════ */
     function startEditCmt(nid, i) {
-      const area = $(`ce-${nid}-${i}`);
-      const body = $(`ct-${nid}-${i}`);
+      const area = $("ce-" + nid + "-" + i);
+      const body = $("ct-" + nid + "-" + i);
       if (area) area.classList.add("open");
       if (body) body.style.display = "none";
     }
 
     function cancelCmt(nid, i) {
-      const area = $(`ce-${nid}-${i}`);
-      const body = $(`ct-${nid}-${i}`);
+      const area = $("ce-" + nid + "-" + i);
+      const body = $("ct-" + nid + "-" + i);
       if (area) area.classList.remove("open");
       if (body) body.style.display = "";
       const note = notes.find(n => n.id === nid);
-      const input = $(`cf-${nid}-${i}`);
+      const input = $("cf-" + nid + "-" + i);
       if (note && input && note.comments[i]) {
         input.value = typeof note.comments[i] === "string" ? note.comments[i] : note.comments[i].text;
       }
     }
 
     async function saveCmt(nid, i) {
-      const input = $(`cf-${nid}-${i}`);
+      const input = $("cf-" + nid + "-" + i);
       if (!input) return;
       const val = input.value.trim();
       if (!val) return;
@@ -1058,25 +1107,25 @@
       await updateDoc(doc(db, "notes", nid), { comments: updated });
     }
 
-    /* ═══════════ TRENDING ═══════════ */
+    /* ═══════ TRENDING ═══════ */
     function renderTrending() {
       trendingCont.innerHTML = "";
       if (!notes.length) {
-        trendingCont.innerHTML = `<div class="empty-state" style="padding:1rem;"><p style="font-size:0.92rem;">No trending subjects yet.</p></div>`;
+        trendingCont.innerHTML = '<div class="empty-state" style="padding:1rem;"><p style="font-size:0.92rem;">No trending subjects yet.</p></div>';
         return;
       }
       const c = {};
-      notes.forEach(n => { const s = (n.subject||"").trim(); if (s) c[s] = (c[s]||0)+1; });
-      const top = Object.entries(c).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,6);
-      if (!top.length) { trendingCont.innerHTML = `<div class="empty-state" style="padding:1rem;"><p style="font-size:0.92rem;">No trending subjects yet.</p></div>`; return; }
-      top.forEach(([s,n])=>{
-        const d = document.createElement("div"); d.className="trend-item";
-        d.innerHTML=`<span>${esc(s)}</span><span class="trend-count">${n}</span>`;
+      notes.forEach(n => { const s = (n.subject || "").trim(); if (s) c[s] = (c[s] || 0) + 1; });
+      const top = Object.entries(c).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 6);
+      if (!top.length) { trendingCont.innerHTML = '<div class="empty-state" style="padding:1rem;"><p style="font-size:0.92rem;">No trending subjects yet.</p></div>'; return; }
+      top.forEach(([s, n]) => {
+        const d = document.createElement("div"); d.className = "trend-item";
+        d.innerHTML = '<span>' + esc(s) + '</span><span class="trend-count">' + n + '</span>';
         trendingCont.appendChild(d);
       });
     }
 
-    /* ═══════════ PROFILE ═══════════ */
+    /* ═══════ PROFILE ═══════ */
     function renderProfile() {
       profileAvatar.textContent  = currentUser.avatar;
       profileNameEl.textContent  = currentUser.name;
@@ -1108,34 +1157,34 @@
       emojiPicker.innerHTML = "";
       list.forEach(em => {
         const b = document.createElement("button"); b.type = "button";
-        b.className = `emoji-option ${em===selectedEmoji?"selected":""}`;
+        b.className = "emoji-option" + (em === selectedEmoji ? " selected" : "");
         b.textContent = em;
         b.onclick = e => {
           selectedEmoji = em;
-          document.querySelectorAll(".emoji-option").forEach(x=>x.classList.remove("selected"));
+          document.querySelectorAll(".emoji-option").forEach(x => x.classList.remove("selected"));
           e.currentTarget.classList.add("selected");
         };
         emojiPicker.appendChild(b);
       });
     }
 
-    /* ═══════════ SHOUT-OUTS ═══════════ */
+    /* ═══════ SHOUT-OUTS ═══════ */
     function renderShouts() {
       shoutList.innerHTML = "";
       if (!shouts.length) {
-        shoutList.innerHTML = `<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">💬</div><p>No shout-outs yet. Be the first!</p></div>`;
+        shoutList.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">💬</div><p>No shout-outs yet. Be the first!</p></div>';
         return;
       }
       shouts.forEach(s => {
         const mine = s.ownerId === uid;
         const card = document.createElement("div"); card.className = "shout-card";
-        card.innerHTML = `
-          <div class="shout-header">
-            <h4>${esc(s.name||"Anonymous Owl")}</h4>
-            ${mine?`<button class="shout-del-btn" onclick="deleteShout('${s.id}')" title="Delete">✕</button>`:""}
-          </div>
-          <p style="margin:0.3rem 0">${esc(s.message)}</p>
-          <small>${esc(fmtDate(s.createdAt)||"")}</small>`;
+        card.innerHTML =
+          '<div class="shout-header">' +
+            '<h4>' + esc(s.name || "Anonymous Owl") + '</h4>' +
+            (mine ? '<button class="shout-del-btn" onclick="deleteShout(\'' + s.id + '\')" title="Delete">✕</button>' : '') +
+          '</div>' +
+          '<p style="margin:0.3rem 0">' + esc(s.message) + '</p>' +
+          '<small>' + esc(fmtDate(s.createdAt) || "") + '</small>';
         shoutList.appendChild(card);
       });
     }
@@ -1145,173 +1194,192 @@
       await deleteDoc(doc(db, "shoutouts", id));
     }
 
-    /* ═══════════ FILE PREVIEW ═══════════ */
+    /* ═══════ FILE PREVIEW ═══════ */
     function previewSelectedFiles() {
       clearPreviews();
-      const files = Array.from(noteFileInput.files||[]);
-      if (!files.length) { uploadPreview.className="upload-preview empty"; uploadPreview.innerHTML="No files selected yet."; return; }
-      uploadPreview.className="upload-preview";
-      let h=`<div class="upload-grid">`;
-      files.forEach(f=>{
-        if(f.type.startsWith("image/")){const u=URL.createObjectURL(f);tempPreviewUrls.push(u);h+=`<div class="upload-item"><img class="upload-thumb" src="${u}" alt="${esc(f.name)}"/><div class="upload-name">${esc(f.name)}</div><div class="upload-size">${esc(fmtSize(f.size))}</div></div>`;}
-        else{h+=`<div class="upload-item"><div class="upload-file-icon">📄</div><div class="upload-name">${esc(f.name)}</div><div class="upload-size">${esc(fmtSize(f.size))}</div></div>`;}
+      const files = Array.from(noteFileInput.files || []);
+      if (!files.length) { uploadPreview.className = "upload-preview empty"; uploadPreview.innerHTML = "No files selected yet."; return; }
+      uploadPreview.className = "upload-preview";
+      let h = '<div class="upload-grid">';
+      files.forEach(f => {
+        if (f.type.startsWith("image/")) {
+          const u = URL.createObjectURL(f); tempPreviewUrls.push(u);
+          h += '<div class="upload-item"><img class="upload-thumb" src="' + u + '" alt="' + esc(f.name) + '"/><div class="upload-name">' + esc(f.name) + '</div><div class="upload-size">' + esc(fmtSize(f.size)) + '</div></div>';
+        } else {
+          h += '<div class="upload-item"><div class="upload-file-icon">📄</div><div class="upload-name">' + esc(f.name) + '</div><div class="upload-size">' + esc(fmtSize(f.size)) + '</div></div>';
+        }
       });
-      uploadPreview.innerHTML=h+`</div>`;
+      uploadPreview.innerHTML = h + '</div>';
     }
 
-    function resetComposer(){document.getElementById("noteForm").reset();clearPreviews();uploadPreview.className="upload-preview empty";uploadPreview.innerHTML="No files selected yet.";}
-
-    async function uploadFiles(files){
-      return Promise.all(files.map(async f=>{
-        const p=`notes/${uid}/${Date.now()}_${f.name}`;const r=ref(storage,p);
-        await uploadBytes(r,f);const url=await getDownloadURL(r);
-        return{name:f.name,type:f.type||"application/octet-stream",size:f.size,isImage:f.type.startsWith("image/"),url,storagePath:p};
-      }));
+    function resetComposer() {
+      document.getElementById("noteForm").reset();
+      clearPreviews();
+      uploadPreview.className = "upload-preview empty";
+      uploadPreview.innerHTML = "No files selected yet.";
+      uploadProgress.classList.remove("active");
+      progressBarFill.style.width = "0%";
+      publishBtn.disabled = false;
+      publishBtn.textContent = "Publish ✨";
     }
 
-    /* ═══════════ NOTE ACTIONS ═══════════ */
-    async function toggleLike(id){
-      const n=notes.find(x=>x.id===id);if(!n||!uid)return;const r=doc(db,"notes",id);
-      if(n.likedByMe)await updateDoc(r,{likes:increment(-1),likedBy:arrayRemove(uid)});
-      else await updateDoc(r,{likes:increment(1),likedBy:arrayUnion(uid)});
+    /* ═══════ NOTE ACTIONS ═══════ */
+    async function toggleLike(id) {
+      const n = notes.find(x => x.id === id); if (!n || !uid) return;
+      const r = doc(db, "notes", id);
+      if (n.likedByMe) await updateDoc(r, { likes: increment(-1), likedBy: arrayRemove(uid) });
+      else await updateDoc(r, { likes: increment(1), likedBy: arrayUnion(uid) });
     }
 
-    function toggleComments(id){const w=$(`comments-${id}`);if(w)w.classList.toggle("open");}
+    function toggleComments(id) { const w = $("comments-" + id); if (w) w.classList.toggle("open"); }
 
-    async function addComment(id,input){
-      const t=input.value.trim();if(!t)return;
-      await updateDoc(doc(db,"notes",id),{
-        comments:arrayUnion({text:t,author:currentUser.name,avatar:currentUser.avatar,uid:uid,createdAt:new Date().toISOString()})
+    async function addComment(id, input) {
+      const t = input.value.trim(); if (!t) return;
+      await updateDoc(doc(db, "notes", id), {
+        comments: arrayUnion({ text: t, author: currentUser.name, avatar: currentUser.avatar, uid: uid, createdAt: new Date().toISOString() })
       });
-      input.value="";
+      input.value = "";
     }
 
-    function toggleOptions(id){
-      document.querySelectorAll(".dropdown-menu").forEach(m=>m.classList.remove("show"));
-      const m=$(`options-${id}`);if(m)m.classList.add("show");
+    function toggleOptions(id) {
+      document.querySelectorAll(".dropdown-menu").forEach(m => m.classList.remove("show"));
+      const m = $("options-" + id); if (m) m.classList.add("show");
     }
 
-    function editNote(id){
-      const el=$(`note-${id}`);if(el)el.classList.add("edit-mode");
-      document.querySelectorAll(".dropdown-menu").forEach(m=>m.classList.remove("show"));
+    function editNote(id) {
+      const el = $("note-" + id); if (el) el.classList.add("edit-mode");
+      document.querySelectorAll(".dropdown-menu").forEach(m => m.classList.remove("show"));
     }
 
-    async function saveEdit(id){
-      const ta=$(`edit-content-${id}`);if(!ta)return;
-      await updateDoc(doc(db,"notes",id),{content:ta.value.trim()});
-      const el=$(`note-${id}`);if(el)el.classList.remove("edit-mode");
+    async function saveEdit(id) {
+      const ta = $("edit-content-" + id); if (!ta) return;
+      await updateDoc(doc(db, "notes", id), { content: ta.value.trim() });
+      const el = $("note-" + id); if (el) el.classList.remove("edit-mode");
     }
 
-    function cancelEdit(id){const el=$(`note-${id}`);if(el)el.classList.remove("edit-mode");}
+    function cancelEdit(id) { const el = $("note-" + id); if (el) el.classList.remove("edit-mode"); }
 
-    async function deleteNote(id){
-      if(!confirm("Delete this note?"))return;
-      const n=notes.find(x=>x.id===id);
-      if(n&&n.attachments){for(const f of n.attachments){if(f.storagePath){try{await deleteObject(ref(storage,f.storagePath));}catch{}}}}
-      await deleteDoc(doc(db,"notes",id));
+    async function deleteNote(id) {
+      if (!confirm("Delete this note?")) return;
+      await deleteDoc(doc(db, "notes", id));
     }
 
-    /* ═══════════ FORM HANDLERS ═══════════ */
-    async function handleNotePost(e){
+    /* ═══════ FORM HANDLERS ═══════ */
+    async function handleNotePost(e) {
       e.preventDefault();
-      const subj=$("noteSubjectInput").value.trim();
-      const cont=$("noteContentInput").value.trim();
-      const files=Array.from(noteFileInput.files||[]);
-      const att=files.length?await uploadFiles(files):[];
-      await addDoc(collection(db,"notes"),{
-        ownerId:uid,author:currentUser.name,avatar:currentUser.avatar,
-        major:currentUser.major,subject:subj||"General",content:cont,
-        likes:0,likedBy:[],comments:[],attachments:att,createdAt:serverTimestamp()
+      if (isUploading) return;
+      const subj = $("noteSubjectInput").value.trim();
+      const cont = $("noteContentInput").value.trim();
+      const files = Array.from(noteFileInput.files || []);
+      let att = [];
+
+      if (files.length) {
+        try {
+          att = await uploadFiles(files);
+        } catch (err) {
+          console.error("Upload error:", err);
+          alert("File upload failed. Please try again.");
+          publishBtn.disabled = false;
+          publishBtn.textContent = "Publish ✨";
+          isUploading = false;
+          return;
+        }
+      }
+
+      await addDoc(collection(db, "notes"), {
+        ownerId: uid, author: currentUser.name, avatar: currentUser.avatar,
+        major: currentUser.major, subject: subj || "General", content: cont,
+        likes: 0, likedBy: [], comments: [], attachments: att, createdAt: serverTimestamp()
       });
       closeNoteModal();
     }
 
-    async function handleProfileUpdate(e){
+    async function handleProfileUpdate(e) {
       e.preventDefault();
-      currentUser={
-        name:$("profileNameInput").value.trim()||"Anonymous Owl",
-        avatar:selectedEmoji,
-        major:$("profileMajorInput").value.trim()||"Curious Scholar",
-        bio:$("profileBioInput").value.trim()||"Ready to share wisdom on NoteNest!"
+      currentUser = {
+        name: $("profileNameInput").value.trim() || "Anonymous Owl",
+        avatar: selectedEmoji,
+        major: $("profileMajorInput").value.trim() || "Curious Scholar",
+        bio: $("profileBioInput").value.trim() || "Ready to share wisdom on NoteNest!"
       };
-      if(uid)await setDoc(doc(db,"users",uid),currentUser);
-      renderProfile();renderFeed();closeProfileModal();
+      if (uid) await setDoc(doc(db, "users", uid), currentUser);
+      renderProfile(); renderFeed(); closeProfileModal();
       $("profileForm").reset();
     }
 
-    async function handleShoutPost(e){
+    async function handleShoutPost(e) {
       e.preventDefault();
-      const name=$("shoutName").value.trim();
-      const msg=$("shoutMessage").value.trim();
-      if(!msg)return;
-      await addDoc(collection(db,"shoutouts"),{
-        ownerId:uid,name:name||currentUser.name||"Anonymous Owl",
-        message:msg,createdAt:serverTimestamp()
+      const name = $("shoutName").value.trim();
+      const msg = $("shoutMessage").value.trim();
+      if (!msg) return;
+      await addDoc(collection(db, "shoutouts"), {
+        ownerId: uid, name: name || currentUser.name || "Anonymous Owl",
+        message: msg, createdAt: serverTimestamp()
       });
       e.target.reset();
     }
 
-    /* ═══════════ MODALS / MENUS ═══════════ */
-    function openNoteModal(){noteModal.classList.add("visible");}
-    function closeNoteModal(){noteModal.classList.remove("visible");resetComposer();}
+    /* ═══════ MODALS / MENUS ═══════ */
+    function openNoteModal() { noteModal.classList.add("visible"); }
+    function closeNoteModal() { noteModal.classList.remove("visible"); resetComposer(); }
 
-    function openProfileModal(){
+    function openProfileModal() {
       populateEmojis();
-      $("profileNameInput").value=currentUser.name==="New Student"?"":currentUser.name;
-      $("profileMajorInput").value=currentUser.major.includes("Choose")?"":currentUser.major;
-      $("profileBioInput").value=currentUser.bio.includes("Tap")?"":currentUser.bio;
+      $("profileNameInput").value = currentUser.name === "New Student" ? "" : currentUser.name;
+      $("profileMajorInput").value = currentUser.major.includes("Choose") ? "" : currentUser.major;
+      $("profileBioInput").value = currentUser.bio.includes("Tap") ? "" : currentUser.bio;
       profileModal.classList.add("visible");
     }
 
-    function closeProfileModal(){profileModal.classList.remove("visible");}
+    function closeProfileModal() { profileModal.classList.remove("visible"); }
 
-    function toggleProfileMenu(){
-      profileMenuOpen=!profileMenuOpen;
-      profileMenu.classList.toggle("show",profileMenuOpen);
+    function toggleProfileMenu() {
+      profileMenuOpen = !profileMenuOpen;
+      profileMenu.classList.toggle("show", profileMenuOpen);
     }
 
-    function toggleSearchPanel(){
+    function toggleSearchPanel() {
       searchPanel.classList.toggle("show");
-      if(searchPanel.classList.contains("show"))$("searchInput").focus();
+      if (searchPanel.classList.contains("show")) $("searchInput").focus();
     }
 
-    function handleSearchInput(e){
-      searchQuery=e.target.value.trim().toLowerCase();
-      searchStatus.textContent=searchQuery?`Showing notes matching "${searchQuery}"`:"Browsing all shared notes.";
+    function handleSearchInput(e) {
+      searchQuery = e.target.value.trim().toLowerCase();
+      searchStatus.textContent = searchQuery ? 'Showing notes matching "' + searchQuery + '"' : "Browsing all shared notes.";
       renderFeed();
     }
 
-    function clearSearch(){
-      $("searchInput").value="";searchQuery="";
-      searchStatus.textContent="Browsing all shared notes.";renderFeed();
+    function clearSearch() {
+      $("searchInput").value = ""; searchQuery = "";
+      searchStatus.textContent = "Browsing all shared notes."; renderFeed();
     }
 
-    function viewProfile(name){alert(`${name}'s full profile — coming soon in the next NoteNest update!`);}
+    function viewProfile(name) { alert(name + "'s full profile — coming soon in the next NoteNest update!"); }
 
-    /* ═══════════ FIRESTORE LISTENERS ═══════════ */
-    function subscribeNotes(){
-      const q=query(collection(db,"notes"),orderBy("createdAt","desc"));
-      onSnapshot(q,snap=>{
-        notes=snap.docs.map(d=>{
-          const data=d.data();const lb=data.likedBy||[];
-          return{id:d.id,...data,likes:data.likes||0,
-            likedByMe:uid?lb.includes(uid):false,
-            comments:data.comments||[],attachments:data.attachments||[],
-            isOwner:data.ownerId===uid};
+    /* ═══════ FIRESTORE LISTENERS ═══════ */
+    function subscribeNotes() {
+      const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+      onSnapshot(q, snap => {
+        notes = snap.docs.map(d => {
+          const data = d.data(); const lb = data.likedBy || [];
+          return { id: d.id, ...data, likes: data.likes || 0,
+            likedByMe: uid ? lb.includes(uid) : false,
+            comments: data.comments || [], attachments: data.attachments || [],
+            isOwner: data.ownerId === uid };
         });
-        renderFeed();renderTrending();
+        renderFeed(); renderTrending();
       });
     }
 
-    function subscribeShouts(){
-      const q=query(collection(db,"shoutouts"),orderBy("createdAt","desc"));
-      onSnapshot(q,snap=>{
-        shouts=snap.docs.map(d=>({id:d.id,...d.data()}));
+    function subscribeShouts() {
+      const q = query(collection(db, "shoutouts"), orderBy("createdAt", "desc"));
+      onSnapshot(q, snap => {
+        shouts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderShouts();
       });
     }
 
-    /* ═══════════ EXPOSE TO GLOBAL SCOPE ═══════════ */
+    /* ═══════ EXPOSE TO GLOBAL SCOPE ═══════ */
     Object.assign(window, {
       openNoteModal, closeNoteModal,
       openProfileModal, closeProfileModal,
@@ -1326,7 +1394,7 @@
       viewProfile, setFilter
     });
 
-    /* ═══════════ CLOSE ON OUTSIDE CLICK ═══════════ */
+    /* ═══════ CLOSE ON OUTSIDE CLICK ═══════ */
     window.addEventListener("click", e => {
       if (e.target === noteModal) closeNoteModal();
       if (e.target === profileModal) closeProfileModal();
@@ -1338,7 +1406,7 @@
       }
     });
 
-    /* ═══════════ AUTH + BOOT ═══════════ */
+    /* ═══════ AUTH + BOOT ═══════ */
     signInAnonymously(auth);
     onAuthStateChanged(auth, async user => {
       uid = user ? user.uid : null;
